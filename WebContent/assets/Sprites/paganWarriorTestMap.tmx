@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="16" height="16" tilewidth="48" tileheight="48" nextobjectid="12">
+ <tileset firstgid="1" name="tiles" tilewidth="48" tileheight="48" tilecount="760" columns="20">
+  <image source="oryx_ultimate_fantasy/uf_terrain.png" width="960" height="1824"/>
+ </tileset>
+ <tileset firstgid="761" name="uf_heroes_simple" tilewidth="48" tileheight="48" tilecount="130" columns="10">
+  <image source="oryx_ultimate_fantasy/uf_heroes_simple.png" width="480" height="624"/>
+ </tileset>
+ <tileset firstgid="891" name="tree" tilewidth="48" tileheight="48" tilecount="4" columns="2">
+  <image source="../images/tree.png" width="96" height="96"/>
+ </tileset>
+ <layer name="backgroundLayer" width="16" height="16">
+  <data encoding="csv">
+126,146,147,147,147,146,146,146,146,146,146,146,146,146,146,146,
+126,146,146,146,146,146,146,146,146,146,146,146,146,146,146,146,
+126,146,148,146,146,146,146,146,148,148,148,148,148,146,146,146,
+126,146,148,146,146,146,148,148,146,146,146,146,146,146,146,146,
+126,146,148,148,146,146,146,146,146,146,146,146,147,146,146,126,
+126,146,146,146,146,146,146,146,146,146,146,147,146,146,146,126,
+126,126,126,126,126,126,126,126,146,126,126,126,126,126,126,126,
+126,127,127,127,127,127,127,127,126,126,126,126,126,126,127,126,
+126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,
+126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,
+126,126,126,126,126,126,126,126,127,126,126,126,126,126,126,126,
+126,126,126,126,126,126,126,126,126,127,127,127,126,128,126,126,
+126,126,126,126,126,126,126,126,126,126,128,128,128,126,126,126,
+126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,126,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer name="blockLayer" width="16" height="16">
+  <data encoding="csv">
+262,0,0,0,0,0,0,0,0,0,0,0,0,0,0,262,
+262,0,627,0,627,0,0,0,0,0,0,628,0,627,0,262,
+262,0,0,0,0,0,0,0,0,0,0,632,0,0,0,262,
+262,0,627,0,628,0,0,0,0,0,0,627,0,631,0,262,
+262,0,0,0,0,0,0,0,0,0,0,0,0,0,0,262,
+262,0,0,0,0,0,0,0,0,0,0,0,0,0,0,262,
+282,282,286,282,286,282,286,287,0,287,286,282,286,282,286,282,
+0,0,891,892,0,0,0,375,0,376,0,0,0,891,892,0,
+891,892,893,894,891,892,0,375,0,376,0,891,892,893,894,0,
+893,894,0,0,893,894,0,375,0,376,0,893,894,0,0,0,
+397,397,397,397,397,397,397,398,0,396,397,397,397,397,397,397,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+154,154,154,154,154,154,154,154,154,154,154,154,154,154,154,154,
+154,154,154,154,154,154,154,154,154,154,154,154,154,154,154,154
+</data>
+ </layer>
+ <objectgroup name="objectLayer">
+  <object id="3" type="door" gid="451" x="384" y="338" width="48" height="52">
+   <properties>
+    <property name="sprite1" value="gate"/>
+    <property name="sprite2" value="gateopen"/>
+   </properties>
+  </object>
+  <object id="5" type="playerStart" gid="429" x="384" y="624" width="48" height="48">
+   <properties>
+    <property name="sprite" value="player"/>
+   </properties>
+  </object>
+  <object id="6" type="enemyStart" gid="626" x="384" y="384" width="48" height="48">
+   <properties>
+    <property name="sprite" value="cultist"/>
+   </properties>
+  </object>
+  <object id="7" type="enemyStart" gid="626" x="288" y="48" width="48" height="48">
+   <properties>
+    <property name="sprite" value="cultist"/>
+   </properties>
+  </object>
+  <object id="8" type="enemyStart" gid="626" x="480" y="144" width="48" height="48">
+   <properties>
+    <property name="sprite" value="cultist"/>
+   </properties>
+  </object>
+  <object id="9" type="npcStart" gid="862" x="96" y="576" width="48" height="48">
+   <properties>
+    <property name="sprite" value="maiden"/>
+   </properties>
+  </object>
+  <object id="11" type="enemyStart" gid="626" x="192" y="144" width="48" height="48">
+   <properties>
+    <property name="sprite" value="cultist"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

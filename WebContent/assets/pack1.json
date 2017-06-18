@@ -1,0 +1,87 @@
+{
+    "level": [
+        {
+            "type": "spritesheet",
+            "key": "player",
+            "url": "assets/images/playersprite.png",
+            "frameWidth": 48,
+            "frameHeight": 48,
+            "frameMax": -1,
+            "margin": 0,
+            "spacing": 0
+        },
+        {
+            "type": "spritesheet",
+            "key": "cultist",
+            "url": "assets/images/cultist.png",
+            "frameWidth": 48,
+            "frameHeight": 48,
+            "frameMax": -1,
+            "margin": 0,
+            "spacing": 0
+        },
+        {
+            "type": "image",
+            "key": "gate",
+            "url": "assets/images/gate.png",
+            "overwrite": false
+        },
+        {
+            "type": "image",
+            "key": "gateopen",
+            "url": "assets/images/gateopen.png",
+            "overwrite": false
+        },
+        {
+            "type": "image",
+            "key": "goldenkey",
+            "url": "assets/images/goldenkey.png",
+            "overwrite": false
+        },
+        {
+            "type": "image",
+            "key": "healthpotion",
+            "url": "assets/images/healthpotion.png",
+            "overwrite": false
+        },
+        {
+            "type": "image",
+            "key": "maiden",
+            "url": "assets/images/maiden.png",
+            "overwrite": false
+        },
+        {
+            "type": "image",
+            "key": "tiles",
+            "url": "assets/images/tiles.png",
+            "overwrite": false
+        },
+        {
+            "type": "tilemap",
+            "key": "oryxtiles",
+            "url": "assets/tilemaps/oryxtiles.json",
+            "format": "TILED_JSON"
+        },
+        {
+            "type": "bitmapFont",
+            "key": "font",
+            "textureURL": "assets/fonts/font_0.png",
+            "atlasURL": "assets/fonts/font.xml",
+            "xSpacing": 0,
+            "ySpacing": 0
+        },
+        {
+            "type": "image",
+            "key": "tree",
+            "url": "assets/images/tree.png",
+            "overwrite": false
+        }
+    ],
+    "meta": {
+        "generated": "1497700749861",
+        "app": "Phaser Editor",
+        "url": "http://phasereditor.boniatillo.com",
+        "version": "1.0",
+        "copyright": "Arian Fornaris (c) 2015,2016"
+    }
+}
