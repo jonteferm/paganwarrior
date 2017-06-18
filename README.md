@@ -1,5 +1,4 @@
 # paganwarrior
-Source code is released under the zlib license. Except as noted
-below, the following terms apply to all files in this distribution.
+Source code is released under the zlib license.
 
 Copyright © 2017 Jonathan Ferm
