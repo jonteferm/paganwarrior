@@ -7,7 +7,7 @@ Player = function(game, x, y){
 			type: "weapon", 
 			damage: 4, 
 			protection: 0, 
-			attackRate: 1.6 ,
+			attackSpeed: 1.6 ,
 			block: 0,
 		},
 	};
@@ -20,9 +20,10 @@ Player = function(game, x, y){
 	this.strength = 15; 
 
 	/*Räknas ut*/
-	this.primalDamage = 1; //TODO: Lägg till uträkning
+	this.primalDamage = 1;
 	this.weaponDamage = 0;
-	this.attackRate = 3;
+	this.attackSpeed = 3;
+	this.blockSpeed = 3;
 	this.hit = 1;
 	this.protection = 1;
 	this.block = 1.2;
@@ -95,7 +96,9 @@ Player.prototype.checkActions = function(levelObjects){
 			var enemy = levelObjects.enemies[i];
 			
 			if(this.checkHitEnemy(enemy, this.game.input.activePointer.x+this.game.camera.x, this.game.input.activePointer.y+this.game.camera.y)){
-				this.parryEnemy(enemy);
+				if(enemy.blockChanceTimeGap.isRunning){
+					this.parryEnemy(enemy);
+				}
 			}
 		}
 	}else if(this.wasd.up.isDown){
@@ -118,7 +121,7 @@ Player.prototype.checkActions = function(levelObjects){
 };
 		
 Player.prototype.engageSingleCombat = function(enemies){
-	if(this.game.time.now - this.timeAttacked > this.attackRate*1000){
+	if(this.game.time.now - this.timeAttacked > this.attackSpeed*1000){
 		if(this.lastDirection === "down"){
 			this.animations.play("hitDown", 5, false);
 		}else if(this.lastDirection === "left"){
@@ -157,8 +160,8 @@ Player.prototype.engageGroupCombat = function(enemies){
 				nextAttacker = enemy;
 			}else{
 				if(enemy.timeAttacked > 0){
-					var enemyRecoveryTimeLeft = ((enemy.attackRate*1000) + enemy.tempCooldownTime) - (this.game.time.now - enemy.timeAttacked);
-					var prevEnemyRecoveryTimeLeft = ((nextAttacker.attackRate*1000) + nextAttacker.tempCooldownTime) - (this.game.time.now - nextAttacker.timeAttacked);
+					var enemyRecoveryTimeLeft = ((enemy.attackSpeed*1000) + enemy.tempCooldownTime) - (this.game.time.now - enemy.timeAttacked);
+					var prevEnemyRecoveryTimeLeft = ((nextAttacker.attackSpeed*1000) + nextAttacker.tempCooldownTime) - (this.game.time.now - nextAttacker.timeAttacked);
 					
 					if(enemyRecoveryTimeLeft < prevEnemyRecoveryTimeLeft){
 						//TODO: Om samma - slumpa? Inom viss marginal och baserat på skill - slumpa?
@@ -175,14 +178,10 @@ Player.prototype.engageGroupCombat = function(enemies){
 		console.log("parry: " + nextAttacker.id);
 		
 		this.parryEnemy(nextAttacker);
-
-		this.timeAttacked = this.game.time.now; //TODO: Ska all parry räknas som attacked?
 	}
 };
 		
 Player.prototype.parryEnemy = function(nextAttacker){
-	//TODO: calculate how the parry went.
-	
 	/*Räknar ut vilken animation som ska köras*/
 	var xDifference = nextAttacker.x - this.x;
 	var yDifference = nextAttacker.y - this.y;
@@ -192,9 +191,8 @@ Player.prototype.parryEnemy = function(nextAttacker){
 	
 	//console.log("xNormDifference: " + xNormDifference);
 	//console.log("yNormDifference: " + yNormDifference);
-	
 
-	if(this.game.time.now - this.timeBlocked > (this.attackRate*500)){
+	if(this.game.time.now - this.timeAttacked > (this.blockSpeed*1000) ){
 		if(xNormDifference > yNormDifference){
 			if(xDifference > 0){
 				this.animations.play("idleRight", 5, false);
@@ -223,9 +221,9 @@ Player.prototype.parryEnemy = function(nextAttacker){
 		}
 		
 		if(nextAttacker.strength > nextAttacker.dexterity){
-			attackForce = nextAttacker.strength/10 - nextAttacker.attackRate/10 + (nextAttacker.hit*(Math.floor((Math.random() * 6) + 1)));
+			attackForce = nextAttacker.strength/10 - nextAttacker.attackSpeed/10 + (nextAttacker.hit*(Math.floor((Math.random() * 6) + 1)));
 		}else{
-			attackForce = nextAttacker.strength/10 - nextAttacker.attackRate/10 + (nextAttacker.hit*(Math.floor((Math.random() * 6) + 1)));
+			attackForce = nextAttacker.strength/10 - nextAttacker.attackSpeed/10 + (nextAttacker.hit*(Math.floor((Math.random() * 6) + 1)));
 		}
 		
 		parryValue = parryForce - attackForce;
@@ -266,7 +264,7 @@ Player.prototype.parryEnemy = function(nextAttacker){
 				break;
 		}
 		
-		this.timeBlocked = this.game.time.now;
+		this.timeAttacked = this.game.time.now;
 	}
 };
 		

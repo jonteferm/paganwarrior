@@ -66,8 +66,8 @@
                  "type":"playerStart",
                  "visible":true,
                  "width":48,
-                 "x":384,
-                 "y":624
+                 "x":0,
+                 "y":672
                 }, 
                 {
                  "gid":626,
@@ -184,7 +184,7 @@
         {
          "columns":20,
          "firstgid":1,
-         "image":"..\/..\/..\/..\/Sprites\/oryx_ultimate_fantasy\/uf_terrain.png",
+         "image":"..\/Sprites\/oryx_ultimate_fantasy\/uf_terrain.png",
          "imageheight":1824,
          "imagewidth":960,
          "margin":0,
@@ -197,7 +197,7 @@
         {
          "columns":10,
          "firstgid":761,
-         "image":"..\/..\/..\/..\/Sprites\/oryx_ultimate_fantasy\/uf_heroes_simple.png",
+         "image":"..\/Sprites\/oryx_ultimate_fantasy\/uf_heroes_simple.png",
          "imageheight":624,
          "imagewidth":480,
          "margin":0,
@@ -210,7 +210,7 @@
         {
          "columns":2,
          "firstgid":891,
-         "image":"..\/..\/..\/..\/NewPlayground\/assets\/dungeontest\/images\/tree.png",
+         "image":"..\/images\/tree.png",
          "imageheight":96,
          "imagewidth":96,
          "margin":0,

@@ -15,7 +15,7 @@ Enemy = function(game, x, y, type){
 	this.primalDamage = 1;
 	this.weaponDamage = 2;
 	this.protection = 1;
-	this.attackRate = 5;
+	this.attackSpeed = 5;
 	this.hit = 1;
 	this.reach = 1;
 	this.perception = 5;
@@ -81,24 +81,21 @@ Enemy.prototype.takeActions = function(levelObjects){
 	}
 	
 	if(reachOpponent){
-		if(this.game.time.now - this.timeAttacked > (this.attackRate*800) + this.tempCooldownTime){
-			this.canBeBlocked = true;
-			
+		if(this.game.time.now - this.timeAttacked > (this.attackSpeed*950) + this.tempCooldownTime){
 			var attackWarning = this.game.add.text(this.x+(this.hitCount*5), this.y-(this.hitCount*5), "!", {
 				font: "18px Arial",
 				fill: "#66ffff",
 			});
 		    
-			var attackWarningFadeOut = this.game.add.tween(attackWarning).to({alpha: 0}, 100, null, true);
+			this.blockChanceTimeGap = this.game.add.tween(attackWarning).to({alpha: 0}, 50, null, true);
 	
-			attackWarningFadeOut.onComplete.add(function(){
-				this.canBeBlocked = false;
+			this.blockChanceTimeGap.onComplete.add(function(){
 				attackWarning.destroy();
 			});
 		}
 			
-			
-		if(this.game.time.now - this.timeAttacked > (this.attackRate*1000) + this.tempCooldownTime){
+		
+		if(this.game.time.now - this.timeAttacked > (this.attackSpeed*1000) + this.tempCooldownTime){
 				this.timeAttacked = this.game.time.now;
 				console.log("enemy " + this.id + " strikes player!");
 				opponent.takeDamage(this, "primary");

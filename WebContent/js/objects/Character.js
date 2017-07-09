@@ -12,13 +12,16 @@ Character = function(game, x, y, type){
 	/*Räknas ut*/
 	this.primalDamage = 0; //TODO: Lägg till uträkning
 	this.weaponDamage = 0;
-	this.attackRate = 0;
+	this.attackSpeed = 0;
 	this.hit = 0;
 	this.protection = 0;
 	this.block = 0;
 	this.reach = 0;
 	/*---------*/
 	
+	/*Display*/
+	this.attackRate = 0;
+	/*-------*/
 
 	/*States*/
 	this.lastDirction = "";
@@ -28,7 +31,6 @@ Character = function(game, x, y, type){
 	this.attacking = false;
 	this.waitingTime = 0;
 	this.enemiesAttacked = [];
-	this.canBeBlocked = false;
 	/*------*/
 	
 	this.inventory = [];
@@ -40,6 +42,12 @@ Character = function(game, x, y, type){
 	/*Presentation*/
 	this.dmgTextColour = "#00ff66";
 	/*------------*/
+	
+	const ATTACKSPEED_COUNTERWEIGHT = 1000000;
+	const ATTACKSPEED_OFFSET 		= 0;
+	const BLOCKSPEED_COUNTERWEIGHT	= 1000000;
+	const BLOCKSPEED_OFFSET			= 0;
+	
 };
 
 Character.prototype = Object.create(Phaser.Sprite.prototype);
@@ -58,7 +66,7 @@ Character.prototype.countStats = function(){
 			}
 		  
 	 	  	this.protection += item.protection;
-			this.attackRate -= item.attackRate;
+			this.attackSpeed -= item.attackSpeed;
 		}
 	}
 };
@@ -80,7 +88,7 @@ Character.prototype.checkReach = function(opponent){
 };
 		
 Character.prototype.getBlocked = function(attacker, blockType){
-	if(this.canBeBlocked){
+	
 		if(blockType === "threatening"){
 			this.tempCooldownTime = 3000;
 		}
@@ -100,7 +108,7 @@ Character.prototype.getBlocked = function(attacker, blockType){
 		    
 			this.timeAttacked = this.game.time.now;
 		}
-	}
+	
 };
 		
 Character.prototype.takeDamage = function(attacker, attackType){
@@ -128,7 +136,7 @@ Character.prototype.takeDamage = function(attacker, attackType){
 			fill: this.dmgTextColour,
 		});
 	    
-		this.game.time.events.add(attacker.attackRate, function(){
+		this.game.time.events.add(attacker.attackSpeed, function(){
 			/*The attackers game reference have to be used here because this object
 			 * cease to exist by the the time the event kicks in.*/
 			var dmgTextFadeOut = attacker.game.add.tween(dmgText).to({alpha: 0}, 1500, null, true);

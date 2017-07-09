@@ -56,7 +56,7 @@
     <property name="sprite2" value="gateopen"/>
    </properties>
   </object>
-  <object id="5" type="playerStart" gid="429" x="384" y="624" width="48" height="48">
+  <object id="5" type="playerStart" gid="429" x="0" y="672" width="48" height="48">
    <properties>
     <property name="sprite" value="player"/>
    </properties>
