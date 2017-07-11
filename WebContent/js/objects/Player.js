@@ -22,7 +22,7 @@ Player = function(game, x, y){
 	/*Räknas ut*/
 	this.primalDamage = 1;
 	this.weaponDamage = 0;
-	this.attackSpeed = 3;
+	this.attackSpeed = 5;
 	this.blockSpeed = 3;
 	this.hit = 1;
 	this.protection = 1;
@@ -46,7 +46,7 @@ Player = function(game, x, y){
 
 	this.reachCircle = this.game.add.graphics();
 	this.reachCircle.beginFill(0x000000, 1);
-	this.reachCircle.drawCircle(this.x+24, this.y+24, this.reach*48);
+	this.reachCircle.drawCircle(this.x + (SPRITE_SIZE/2), this.y + (SPRITE_SIZE/2), this.reach * SPRITE_SIZE);
 	this.reachCircle.alpha = 0.2;
 	this.reachCircle.endFill();
 	
@@ -81,7 +81,7 @@ Player.prototype.constructor = Player;
 Player.prototype.checkActions = function(levelObjects){
 	this.reachCircle.clear();
 	this.reachCircle.beginFill(0x000000, 1);
-	this.reachCircle.drawCircle(this.x+24, this.y+24, this.reach*48);
+	this.reachCircle.drawCircle(this.x + (SPRITE_SIZE/2), this.y + (SPRITE_SIZE/2), this.reach * SPRITE_SIZE);
 	this.reachCircle.alpha = 0.2;
 	this.reachCircle.endFill();
 	
@@ -94,8 +94,8 @@ Player.prototype.checkActions = function(levelObjects){
 	}else if(this.game.input.activePointer.rightButton.isDown){
 		for(var i = 0; i < levelObjects.enemies.length; i++){
 			var enemy = levelObjects.enemies[i];
-			
-			if(this.checkHitEnemy(enemy, this.game.input.activePointer.x+this.game.camera.x, this.game.input.activePointer.y+this.game.camera.y)){
+	
+			if(this.checkHitEnemy(enemy, this.game.input.activePointer.x + this.game.camera.x, this.game.input.activePointer.y + this.game.camera.y)){
 				if(enemy.blockChanceTimeGap.isRunning){
 					this.parryEnemy(enemy);
 				}
@@ -121,7 +121,7 @@ Player.prototype.checkActions = function(levelObjects){
 };
 		
 Player.prototype.engageSingleCombat = function(enemies){
-	if(this.game.time.now - this.timeAttacked > this.attackSpeed*1000){
+	if(this.game.time.now - this.timeAttacked > this.getAttackSpeed()){
 		if(this.lastDirection === "down"){
 			this.animations.play("hitDown", 5, false);
 		}else if(this.lastDirection === "left"){
@@ -133,7 +133,7 @@ Player.prototype.engageSingleCombat = function(enemies){
 		for(var i = 0; i < enemies.length; i++){
 			var enemy = enemies[i];
 			
-			if(this.checkHitEnemy(enemy, this.game.input.activePointer.x+this.game.camera.x, this.game.input.activePointer.y+this.game.camera.y)){
+			if(this.checkHitEnemy(enemy, this.game.input.activePointer.x +  this.game.camera.x, this.game.input.activePointer.y + this.game.camera.y)){
 				this.enemiesAttacked.push(enemy);
 			}
 		}
@@ -160,8 +160,8 @@ Player.prototype.engageGroupCombat = function(enemies){
 				nextAttacker = enemy;
 			}else{
 				if(enemy.timeAttacked > 0){
-					var enemyRecoveryTimeLeft = ((enemy.attackSpeed*1000) + enemy.tempCooldownTime) - (this.game.time.now - enemy.timeAttacked);
-					var prevEnemyRecoveryTimeLeft = ((nextAttacker.attackSpeed*1000) + nextAttacker.tempCooldownTime) - (this.game.time.now - nextAttacker.timeAttacked);
+					var enemyRecoveryTimeLeft = ((this.getAttackSpeed() + (ENEMY_DIFFICULTY_DIVIDER / this.level)) + enemy.tempCooldownTime) - (this.game.time.now - enemy.timeAttacked);
+					var prevEnemyRecoveryTimeLeft = ((nextAttacker.getAttackSpeed() + (ENEMY_DIFFICULTY_DIVIDER / this.level)) + nextAttacker.tempCooldownTime) - (this.game.time.now - nextAttacker.timeAttacked);
 					
 					if(enemyRecoveryTimeLeft < prevEnemyRecoveryTimeLeft){
 						//TODO: Om samma - slumpa? Inom viss marginal och baserat på skill - slumpa?
@@ -192,7 +192,7 @@ Player.prototype.parryEnemy = function(nextAttacker){
 	//console.log("xNormDifference: " + xNormDifference);
 	//console.log("yNormDifference: " + yNormDifference);
 
-	if(this.game.time.now - this.timeAttacked > (this.blockSpeed*1000) ){
+	if(this.game.time.now - this.timeAttacked > (this.getBlockSpeed()) ){
 		if(xNormDifference > yNormDifference){
 			if(xDifference > 0){
 				this.animations.play("idleRight", 5, false);
@@ -271,7 +271,7 @@ Player.prototype.parryEnemy = function(nextAttacker){
 /*TODO: Gör till generellt checkHit*/
 Player.prototype.checkHitEnemy = function(enemy, mouseX, mouseY){
 	if(this.checkReach(enemy)){
-		if((mouseX >= enemy.x && mouseX < enemy.x + 48) && (mouseY >= enemy.y && mouseY < enemy.y + 48)){
+		if((mouseX >= enemy.x && mouseX < enemy.x + SPRITE_SIZE) && (mouseY >= enemy.y && mouseY < enemy.y + SPRITE_SIZE)){
 			return true;
 		}
 	}

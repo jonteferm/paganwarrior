@@ -1,3 +1,4 @@
+/*
 var TopDownGame = TopDownGame || {};
 
 TopDownGame.Game = function(){};
@@ -234,4 +235,4 @@ TopDownGame.Game.prototype = {
 			this.npcs.add(npc);
 		}
 	}
-};
+};*/

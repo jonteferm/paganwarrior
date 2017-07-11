@@ -76,8 +76,12 @@ Level.prototype = {
 			this.enemies.setAll('body.immovable', false);
 			this.game.physics.arcade.collide(this.enemies, this.enemies, this.collisionHandlerEnemyAndEnemy);
 
-			this.player.body.velocity.y = 0;
-			this.player.body.velocity.x = 0;
+
+			if(this.player !== null){
+				this.player.body.velocity.y = 0;
+				this.player.body.velocity.x = 0;
+
+			}
 
 			if(this.player.combatKeys.switchCombatStyle.isDown){
 				this.player.groupCombatEnabled = !this.player.groupCombatEnabled;
@@ -262,6 +266,7 @@ Level.prototype = {
 		},
 		
 		updatePlayerStatsText: function(player){
+			console.log(player.health);
 			if(this.playerHealthText !== undefined){
 				this.playerHealthText.destroy();
 			}

@@ -3,6 +3,7 @@ Character = function(game, x, y, type){
 	
 	this.id = 0;
 	this.name = "";
+	this.level = 1;
 	
 	this.health = 0;
 	this.dexterity = 0;
@@ -43,16 +44,39 @@ Character = function(game, x, y, type){
 	this.dmgTextColour = "#00ff66";
 	/*------------*/
 	
-	const ATTACKSPEED_COUNTERWEIGHT = 1000000;
-	const ATTACKSPEED_OFFSET 		= 0;
-	const BLOCKSPEED_COUNTERWEIGHT	= 1000000;
-	const BLOCKSPEED_OFFSET			= 0;
-	
 };
 
 Character.prototype = Object.create(Phaser.Sprite.prototype);
 
 Character.prototype.constructor = Character;
+
+Character.prototype.getAttackSpeed = function(){
+	return ATTACKSPEED_COUNTERWEIGHT - (this.attackSpeed * ATTACKSPEED_MULTIPLIER);
+};
+
+Character.prototype.getBlockSpeed = function(){
+	return BLOCKSPEED_COUNTERWEIGHT - (this.blockSpeed * BLOCKSPEED_MULTIPLIER);
+};
+
+Character.prototype.reachRight = function(target){
+	var totalReachRight = (this.x + SPRITE_SIZE) + this.reach * SPRITE_SIZE;
+	return this.x <= target.x && totalReachRight >= target.x;
+};
+
+Character.prototype.reachLeft = function(target){
+	var totalReachLeft = this.x - this.reach * SPRITE_SIZE;
+	return this.x >= target.x && totalReachLeft <= target.x + SPRITE_SIZE;
+};
+
+Character.prototype.reachUp = function(target){
+	var totalReachUp = this.y - this.reach * SPRITE_SIZE;
+	return this.y >= target.y && totalReachUp <= target.y + SPRITE_SIZE;
+};
+
+Character.prototype.reachDown = function(target){
+	var totalReachDown = (this.y + 48) + this.reach * SPRITE_SIZE;
+	return this.y <= target.y && totalReachDown >= target.y;
+};
 
 Character.prototype.countStats = function(){
 	for (var property in this.equipped) {
@@ -66,21 +90,13 @@ Character.prototype.countStats = function(){
 			}
 		  
 	 	  	this.protection += item.protection;
-			this.attackSpeed -= item.attackSpeed;
+			this.attackSpeed += item.attackSpeed;
 		}
 	}
 };
 	
 Character.prototype.checkReach = function(opponent){
-	var totalReachRight = (this.x + 48) + this.reach*48;
-	var totalReachLeft = this.x - this.reach*48;
-	var totalReachUp = this.y - this.reach*48;
-	var totalReachDown = (this.y + 48) + this.reach*48;
-	
-	if(
-		((this.x <= opponent.x && totalReachRight >= opponent.x) || (this.x >= opponent.x && totalReachLeft <= opponent.x + 48))  && 
-		((this.y >= opponent.y && totalReachUp <= (opponent.y + 48)) || (this.y <= opponent.y && totalReachDown >= (opponent.y)) )
-	){
+	if((this.reachRight(opponent) || this.reachLeft(opponent))  && (this.reachUp(opponent) || this.reachDown(opponent))){
 		return true;
 	}
 	
@@ -119,7 +135,7 @@ Character.prototype.takeDamage = function(attacker, attackType){
 		damageDealt = attacker.weaponDamage; //TODO: Inte riktigt va?
 	}else if(attackType === "parry_good"){
 		//TODO: Calculate the damage of parry.
-		damageDealt = attacker.weaponDamage/2;
+		damageDealt = attacker.weaponDamage;
 	}
 
 	damageTaken = damageDealt - this.protection;
