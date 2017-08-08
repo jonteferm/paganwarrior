@@ -1,16 +1,5 @@
 Player = function(game, x, y){
 	Character.call(this, game, x, y, 'player');
-	
-	this.equipped = {
-		rightHand: {
-			name: "broadsword", 
-			type: "weapon", 
-			damage: 4, 
-			protection: 0, 
-			attackSpeed: 1.6 ,
-			block: 0,
-		},
-	};
 
 	this.name = "Sune";
 	
@@ -58,7 +47,6 @@ Player = function(game, x, y){
 		}
 	}, this);
 	
-
 	this.wasd = {
 		up: this.game.input.keyboard.addKey(Phaser.Keyboard.W),
 		down: this.game.input.keyboard.addKey(Phaser.Keyboard.S),
@@ -105,18 +93,30 @@ Player.prototype.checkActions = function(levelObjects){
 		this.body.velocity.y = -96;
 		this.animations.play("up");
 		this.lastDirection = "up";
+
+		this.equipped.rightHand.frame = 6;
+		this.equipped.leftHand.frame = 6;
 	}else if(this.wasd.down.isDown){
 		this.body.velocity.y = 96;
 		this.animations.play("down");
 		this.lastDirection = "down";
+
+		this.equipped.rightHand.frame = 9;
+		this.equipped.leftHand.frame = 9;
 	}else if(this.wasd.left.isDown){
 		this.body.velocity.x = -96;
 		this.animations.play("left");
 		this.lastDirection = "left";
+
+		this.equipped.rightHand.frame = 3;
+		this.equipped.leftHand.frame = 3;
 	}else if(this.wasd.right.isDown){
 		this.body.velocity.x = 96;
 		this.animations.play("right");
 		this.lastDirection = "right";
+
+		this.equipped.rightHand.frame = 0;
+		this.equipped.leftHand.frame = 0;
 	}
 };
 		
@@ -124,10 +124,25 @@ Player.prototype.engageSingleCombat = function(enemies){
 	if(this.game.time.now - this.timeAttacked > this.getAttackSpeed()){
 		if(this.lastDirection === "down"){
 			this.animations.play("hitDown", 5, false);
+			this.equipped.rightHand.animations.play("down", 5, false);
+
+			if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
+				this.equipped.leftHand.animations.play("down", 5, false);
+			}
 		}else if(this.lastDirection === "left"){
 			this.animations.play("hitLeft", 5, false);
+			this.equipped.rightHand.animations.play("left", 5, false);
+
+			if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
+				this.equipped.leftHand.animations.play("left", 5, false);
+			}
 		}else if(this.lastDirection === "right"){
 			this.animations.play("hitRight", 5, false);
+			this.equipped.rightHand.animations.play("right", 5, false);
+
+			if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
+				this.equipped.leftHand.animations.play("right", 5, false);
+			}
 		}
 		
 		for(var i = 0; i < enemies.length; i++){

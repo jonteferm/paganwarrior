@@ -75,6 +75,16 @@
             "key": "tree",
             "url": "assets/images/tree.png",
             "overwrite": false
+        },
+        {
+            "type": "spritesheet",
+            "key": "sword",
+            "url": "assets/images/sword.png",
+            "frameWidth": 48,
+            "frameHeight": 48,
+            "frameMax": -1,
+            "margin": 0,
+            "spacing": 0
         }
     ],
     "meta": {

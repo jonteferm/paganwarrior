@@ -11,8 +11,6 @@ var proto = Object.create(Phaser.State.prototype);
 Level.prototype = proto;
 Level.prototype.constructor = Level;
 
-Item.prototype = Object.create(Phaser.Sprite.prototype);
-
 Door.prototype = Object.create(Phaser.Sprite.prototype);
 
 Level.prototype = {
@@ -38,6 +36,16 @@ Level.prototype = {
 		    this.game.camera.follow(this.player);
 			this.player.countStats();
 			this.player.body.setSize(13,32,16,9);
+
+			var startingWeapon = new Weapon(this.game, 0, 0, 'sword');
+			startingWeapon.damage = 4 
+			startingWeapon.protection = 0; 
+			startingWeapon.speed = 1.6;
+			startingWeapon.block = 0;
+			startingWeapon.twoHanded = true;
+		    
+	
+			this.player.equip(startingWeapon, ['rightHand', 'leftHand']);
 
 			this.spawnEnemies(this.map);
 			this.spawnNpcs(this.map);

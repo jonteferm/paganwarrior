@@ -90,7 +90,7 @@ Character.prototype.countStats = function(){
 			}
 		  
 	 	  	this.protection += item.protection;
-			this.attackSpeed += item.attackSpeed;
+			this.attackSpeed += item.speed;
 		}
 	}
 };
@@ -152,6 +152,7 @@ Character.prototype.takeDamage = function(attacker, attackType){
 			fill: this.dmgTextColour,
 		});
 	    
+	    //TODO: Why is attackSpeed used?
 		this.game.time.events.add(attacker.attackSpeed, function(){
 			/*The attackers game reference have to be used here because this object
 			 * cease to exist by the the time the event kicks in.*/
@@ -180,3 +181,13 @@ Character.prototype.takeDamage = function(attacker, attackType){
 		this.destroy();
 	}
 };
+
+Character.prototype.equip = function(item, placements){
+    this.game.add.existing(item);
+    this.game.physics.arcade.enable(item);
+	for(var i = 0; i < placements.length; i++){
+		this.equipped[placements[i]] = item;
+	}	
+
+	child = this.addChild(item);
+}
