@@ -39,7 +39,7 @@ Character = function(game, x, y, type){
 	this.equipped = {
 			
 	};
-	
+
 	/*Presentation*/
 	this.dmgTextColour = "#00ff66";
 	/*------------*/
@@ -80,18 +80,29 @@ Character.prototype.reachDown = function(target){
 
 Character.prototype.countStats = function(){
 	for (var property in this.equipped) {
-		if (this.equipped.hasOwnProperty(property)) {
-			var item = this.equipped[property];
-			
-			if(item.type === "weapon"){
-				this.weaponDamage += item.damage;
-			}else if(item.type === "primal"){
-				this.primalDamage += item.damage;
+		if(property === 'rightHand' || property === 'leftHand'){
+			if (this.equipped.hasOwnProperty(property)) {
+				var item = this.equipped[property];
+				
+				if(item instanceof Weapon){
+					if(item.twoHanded){
+						this.weaponDamage = item.damage/2;
+					}else{
+						this.weaponDamage = item.damage;
+					}
+				}else {
+					if(item.twoHanded){
+						this.primalDamage = item.damage/2;
+					}else{
+						this.primalDamage = item.damage;
+					}
+				}
+			  
+		 	  	this.protection += item.protection;
+				this.attackSpeed += item.speed;
 			}
-		  
-	 	  	this.protection += item.protection;
-			this.attackSpeed += item.speed;
 		}
+
 	}
 };
 	
@@ -182,12 +193,22 @@ Character.prototype.takeDamage = function(attacker, attackType){
 	}
 };
 
-Character.prototype.equip = function(item, placements){
+Character.prototype.equip = function(item, placements, carrier){
     this.game.add.existing(item);
     this.game.physics.arcade.enable(item);
-	for(var i = 0; i < placements.length; i++){
-		this.equipped[placements[i]] = item;
-	}	
+	if(this.type = 'player'){
+		this.equipped.add(item, placements, carrier);
+	}else{
+		for(var i = 0; i < placements.length; i++){
+			this.equipped[placements[i]] = item;
+		}	
+	}
 
 	child = this.addChild(item);
-}
+	
+	this.countStats();
+};
+
+Character.prototype.store = function(item){
+	this.inventory.add(item, this);
+};

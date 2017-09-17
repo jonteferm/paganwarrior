@@ -1,6 +1,6 @@
 Player = function(game, x, y){
 	Character.call(this, game, x, y, 'player');
-
+	
 	this.name = "Sune";
 	
 	this.health = 20;
@@ -39,6 +39,22 @@ Player = function(game, x, y){
 	this.reachCircle.alpha = 0.2;
 	this.reachCircle.endFill();
 	
+	this.equipped = new Equipped(this.game, 0, 0);
+	this.equipped.inputEnabled = true;
+	this.equipped.input.enableDrag();
+	this.equipped.scale.set(0);
+
+	this.game.add.existing(this.equipped);
+	this.equipped.fixedToCamera = true;
+	
+	this.inventory = new Inventory(this.game, 0, (48*4));
+	this.inventory.inputEnabled = true;
+	this.inventory.input.enableDrag();
+	this.inventory.scale.set(0);
+
+	this.game.add.existing(this.inventory);
+	this.inventory.fixedToCamera = true;
+	
 	this.events.onAnimationComplete.add(function(self, animation){
 		this.animations.stop(true, true);
 		
@@ -54,12 +70,57 @@ Player = function(game, x, y){
 		right: this.game.input.keyboard.addKey(Phaser.Keyboard.D)
 	};
 	
-	this.combatKeys = {
-		switchCombatStyle: this.game.input.keyboard.addKey(Phaser.Keyboard.C)
+	this.keys = {
+		switchCombatStyle: this.game.input.keyboard.addKey(Phaser.Keyboard.C),
+		equipped: this.game.input.keyboard.addKey(Phaser.Keyboard.TAB),
+		inventory: this.game.input.keyboard.addKey(Phaser.Keyboard.I),
 	};
 	
 	
+	this.keys.equipped.onDown.add(function(){
+		if(this.equipped.scale.isZero()){
+			this.equipped.scale.set(1);
+			this.game.world.bringToTop(this.equipped);
+		}else{
+			this.equipped.scale.set(0);
+		}
+	}, this);
+	
+	this.keys.inventory.onDown.add(function(){
+		if(this.inventory.scale.isZero()){
+			this.inventory.scale.set(1);
+			this.game.world.bringToTop(this.inventory);
+		}else{
+			this.inventory.scale.set(0);
+		}
+	}, this);
+
+	
 	this.dmgTextColour = "#ff0000";
+	
+	this.updateCombatModeText();
+	this.updatePlayerStatsText();
+	
+	//Init
+	var startingWeapon = new Weapon(this.game, 0, 0, 'sword');
+	startingWeapon.id = 1;
+	startingWeapon.damage = 4; 
+	startingWeapon.protection = 0; 
+	startingWeapon.speed = 1.6;
+	startingWeapon.block = 0;
+	startingWeapon.twoHanded = true;
+	
+	var startingWeapon2 = new Weapon(this.game, 0, 0, 'sword2');
+	startingWeapon2.id = 2;
+	startingWeapon2.damage = 4; 
+	startingWeapon2.protection = 0; 
+	startingWeapon2.speed = 1.6;
+	startingWeapon2.block = 0;
+	startingWeapon2.twoHanded = true;
+    
+	//this.equip(startingWeapon, ['rightHand', 'leftHand']);
+	this.inventory.add(startingWeapon, this);
+	this.inventory.add(startingWeapon2, this);
 };
 
 Player.prototype = Object.create(Character.prototype);
@@ -89,34 +150,6 @@ Player.prototype.checkActions = function(levelObjects){
 				}
 			}
 		}
-	}else if(this.wasd.up.isDown){
-		this.body.velocity.y = -96;
-		this.animations.play("up");
-		this.lastDirection = "up";
-
-		this.equipped.rightHand.frame = 6;
-		this.equipped.leftHand.frame = 6;
-	}else if(this.wasd.down.isDown){
-		this.body.velocity.y = 96;
-		this.animations.play("down");
-		this.lastDirection = "down";
-
-		this.equipped.rightHand.frame = 9;
-		this.equipped.leftHand.frame = 9;
-	}else if(this.wasd.left.isDown){
-		this.body.velocity.x = -96;
-		this.animations.play("left");
-		this.lastDirection = "left";
-
-		this.equipped.rightHand.frame = 3;
-		this.equipped.leftHand.frame = 3;
-	}else if(this.wasd.right.isDown){
-		this.body.velocity.x = 96;
-		this.animations.play("right");
-		this.lastDirection = "right";
-
-		this.equipped.rightHand.frame = 0;
-		this.equipped.leftHand.frame = 0;
 	}
 };
 		
@@ -124,25 +157,36 @@ Player.prototype.engageSingleCombat = function(enemies){
 	if(this.game.time.now - this.timeAttacked > this.getAttackSpeed()){
 		if(this.lastDirection === "down"){
 			this.animations.play("hitDown", 5, false);
-			this.equipped.rightHand.animations.play("down", 5, false);
-
-			if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
-				this.equipped.leftHand.animations.play("down", 5, false);
-			}
+			
+			if(this.equipped.rightHand != undefined){
+				this.equipped.rightHand.animations.play("down", 5, false);
+				
+				if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
+					this.equipped.leftHand.animations.play("down", 5, false);
+				}
+			}	
 		}else if(this.lastDirection === "left"){
 			this.animations.play("hitLeft", 5, false);
-			this.equipped.rightHand.animations.play("left", 5, false);
-
-			if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
-				this.equipped.leftHand.animations.play("left", 5, false);
+			
+			if(this.equpped.rightHand !== undefined){
+				this.equipped.rightHand.animations.play("left", 5, false);
+				
+				if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
+					this.equipped.leftHand.animations.play("left", 5, false);
+				}
 			}
 		}else if(this.lastDirection === "right"){
 			this.animations.play("hitRight", 5, false);
-			this.equipped.rightHand.animations.play("right", 5, false);
-
-			if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
-				this.equipped.leftHand.animations.play("right", 5, false);
+			
+			if(this.equipped.rightHand !== undefined){
+				this.equipped.rightHand.animations.play("right", 5, false);
+				
+				if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== undefined){
+					this.equipped.leftHand.animations.play("right", 5, false);
+				}
 			}
+
+
 		}
 		
 		for(var i = 0; i < enemies.length; i++){
@@ -282,6 +326,89 @@ Player.prototype.parryEnemy = function(nextAttacker){
 		this.timeAttacked = this.game.time.now;
 	}
 };
+
+Player.prototype.readInput = function(enemies){
+	if(this.keys.switchCombatStyle.isDown){
+		this.groupCombatEnabled = !this.groupCombatEnabled;
+		this.keys.switchCombatStyle.isDown = false;
+		this.updateCombatModeText();
+	}
+	
+	this.checkActions({enemies: enemies.children});
+
+	if(this.wasd.up.isDown){
+		this.body.velocity.y = -96;
+		this.animations.play("up");
+		this.lastDirection = "up";
+		
+		if(this.equipped.rightHand !== undefined){
+			this.equipped.rightHand.frame = 6;
+		}
+		
+		if(this.equipped.leftHand !== undefined){
+			this.equipped.leftHand.frame = 6;
+		}
+	}else if(this.wasd.down.isDown){
+		this.body.velocity.y = 96;
+		this.animations.play("down");
+		this.lastDirection = "down";
+
+		if(this.equipped.rightHand !== undefined){
+			this.equipped.rightHand.frame = 9;
+		}
+		
+		if(this.equipped.leftHand !== undefined){
+			this.equipped.leftHand.frame = 9;
+		}
+	}else if(this.wasd.left.isDown){
+		this.body.velocity.x = -96;
+		this.animations.play("left");
+		this.lastDirection = "left";
+
+		if(this.equipped.rightHand !== undefined){
+			this.equipped.rightHand.frame = 3;
+		}
+
+		if(this.equipped.leftHand !== undefined){
+			this.equipped.leftHand.frame = 3;
+		}
+	
+	}else if(this.wasd.right.isDown){
+		this.body.velocity.x = 96;
+		this.animations.play("right");
+		this.lastDirection = "right";
+
+		if(this.equipped.rightHand !== undefined){
+			this.equipped.rightHand.frame = 0;
+		}
+		
+		if(this.equipped.leftHand !== undefined){
+			this.equipped.leftHand.frame = 0;
+		}
+	}
+	
+};
+
+Player.prototype.updateCombatModeText = function(){
+	if(this.combatModeText !== undefined){
+		this.combatModeText.destroy();
+	}
+
+	this.combatModeText = this.game.add.bitmapText(630, 630, 'font',this.groupCombatEnabled ? "Combat: Group" : "Combat: Single", 16);
+	this.combatModeText.smoothed = true;
+	this.combatModeText.fixedToCamera = true;
+};
+
+Player.prototype.updatePlayerStatsText = function(){
+	if(this.playerHealthText !== undefined){
+		this.playerHealthText.destroy();
+	}
+	
+	this.playerHealthText = this.game.add.bitmapText(630, 650, 'font',"Health: " + this.health, 16);
+	this.playerHealthText.smoothed = true;
+	this.playerHealthText.fixedToCamera = true;
+};
+
 		
 /*TODO: Gör till generellt checkHit*/
 Player.prototype.checkHitEnemy = function(enemy, mouseX, mouseY){

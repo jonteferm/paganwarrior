@@ -73,7 +73,7 @@
         {
             "type": "image",
             "key": "tree",
-            "url": "assets/images/tree.png",
+            "url": "assets/images/testmap1/tree.png",
             "overwrite": false
         },
         {
@@ -85,10 +85,94 @@
             "frameMax": -1,
             "margin": 0,
             "spacing": 0
+        },
+        {
+            "type": "image",
+            "key": "tilesLightForest",
+            "url": "assets/images/testmap1/light_forest_tileset_0.png",
+            "overwrite": false
+        },
+        {
+            "type": "image",
+            "key": "tilesAutumn",
+            "url": "assets/images/testmap1/rpg-autumn-v2.png",
+            "overwrite": false
+        },
+        {
+            "type": "image",
+            "key": "equipped",
+            "url": "assets/images/equipped.png",
+            "overwrite": false
+        },
+        {
+            "type": "bitmapFont",
+            "key": "smallFont",
+            "textureURL": "assets/fonts/smallFont_0.png",
+            "atlasURL": "assets/fonts/smallFont.xml",
+            "xSpacing": 0,
+            "ySpacing": 0
+        },
+        {
+            "type": "image",
+            "key": "inventory",
+            "url": "assets/images/inventory.png",
+            "overwrite": false
+        },
+        {
+            "type": "spritesheet",
+            "key": "sword2",
+            "url": "assets/images/Sword2.png",
+            "frameWidth": 48,
+            "frameHeight": 48,
+            "frameMax": -1,
+            "margin": 0,
+            "spacing": 0
+        },
+        {
+            "type": "image",
+            "key": "autumn48",
+            "url": "assets/images/autumn48.png",
+            "overwrite": false
+        },
+        {
+            "type": "image",
+            "key": "lightForest48",
+            "url": "assets/images/lightForest48.png",
+            "overwrite": false
+        },
+        {
+            "type": "tilemap",
+            "key": "oryxtiles2",
+            "url": "assets/tilemaps/oryxtiles2.json",
+            "format": "TILED_JSON"
+        },
+        {
+            "type": "image",
+            "key": "trees",
+            "url": "assets/images/trees.png",
+            "overwrite": false
+        },
+        {
+            "type": "image",
+            "key": "wood48",
+            "url": "assets/images/wood48.png",
+            "overwrite": false
+        },
+        {
+            "type": "image",
+            "key": "conversation",
+            "url": "assets/images/conversation.png",
+            "overwrite": false
+        },
+        {
+            "type": "image",
+            "key": "exitBtn",
+            "url": "assets/images/exitBtn.png",
+            "overwrite": false
         }
     ],
     "meta": {
-        "generated": "1497700749861",
+        "generated": "1505685268959",
         "app": "Phaser Editor",
         "url": "http://phasereditor.boniatillo.com",
         "version": "1.0",

@@ -4,6 +4,7 @@ Item = function(game, x, y, type){
 	this.id = 0;
 	this.name = "";
 	this.twoHanded = false;
+	this.type = type;
 
 	this.damage = 0;
 	this.protection = 0;

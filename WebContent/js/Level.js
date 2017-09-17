@@ -4,6 +4,7 @@
 function Level() {
 	Phaser.State.call(this);
 	// TODO: generated method.
+	this.conversationOpen = false;
 }
 
 /** @type Phaser.State */
@@ -15,12 +16,20 @@ Door.prototype = Object.create(Phaser.Sprite.prototype);
 
 Level.prototype = {
 		create: function(){
-			this.map = this.game.add.tilemap('oryxtiles');
+			this.map = this.game.add.tilemap('oryxtiles2');
 			this.map.addTilesetImage('tiles', 'tiles');
-			this.map.addTilesetImage('tree', 'tree');
+			//this.map.addTilesetImage('tilesLightForest', 'tilesLightForest');
+			//this.map.addTilesetImage('tilesAutumn', 'tilesAutumn');
+			//this.map.addTilesetImage('tree', 'tree');
+			this.map.addTilesetImage('trees', 'trees');
+			this.map.addTilesetImage('autumn48', 'autumn48');
+			this.map.addTilesetImage('wood48', 'wood48');
+			this.map.addTilesetImage('lightForest48', 'lightForest48');
 
 			this.backgroundLayer = this.map.createLayer('backgroundLayer', 768, 768);
 			this.blockLayer = this.map.createLayer('blockLayer', 768, 768 );
+			this.backgroundLayer = this.map.createLayer('treeLayer', 768, 768);
+			this.backgroundLayer = this.map.createLayer('lesserObjectsLayer', 768, 768);
 
 		    this.map.setCollisionBetween(1, 3000, true, 'blockLayer');
 
@@ -28,35 +37,16 @@ Level.prototype = {
 
 		    this.createItems();
 		 	this.createDoors();
-
-		    var playerStart = this.findObjectsByType('playerStart', this.map, 'objectLayer')[0];
-		    this.player = new Player(this.game, playerStart.x, playerStart.y);
-		    this.game.add.existing(this.player);
-		    this.game.physics.arcade.enable(this.player);
-		    this.game.camera.follow(this.player);
-			this.player.countStats();
-			this.player.body.setSize(13,32,16,9);
-
-			var startingWeapon = new Weapon(this.game, 0, 0, 'sword');
-			startingWeapon.damage = 4 
-			startingWeapon.protection = 0; 
-			startingWeapon.speed = 1.6;
-			startingWeapon.block = 0;
-			startingWeapon.twoHanded = true;
-		    
-	
-			this.player.equip(startingWeapon, ['rightHand', 'leftHand']);
-
+			
 			this.spawnEnemies(this.map);
 			this.spawnNpcs(this.map);
 
 			var graphics = this.game.add.graphics();
 			
 			graphics.beginFill(0x000000, 1);
-			this.gamePanel = graphics.drawRect(0, 768, 768, -352);
+			this.gamePanel = graphics.drawRect(0, 768, 768, -142);
 			graphics.endFill();
 			this.gamePanel.fixedToCamera = true;
-			
 
 			this.gameLogTextHeight = 0;
 			this.gameLog = [];
@@ -64,11 +54,14 @@ Level.prototype = {
 
 			this.addText("Welcome brave adventurer!");	
 			
-			this.updateCombatModeText(false);
-			
-			this.updatePlayerStatsText(this.player);
-			
 			this.game.canvas.oncontextmenu = function (e) { e.preventDefault(); };
+			
+		    var playerStart = this.findObjectsByType('playerStart', this.map, 'objectLayer')[0];
+		    this.player = new Player(this.game, playerStart.x, playerStart.y);
+		    this.game.add.existing(this.player);
+		    this.game.physics.arcade.enable(this.player);
+		    this.game.camera.follow(this.player);
+			this.player.body.setSize(13,32,16,9);
 		},
 
 		update: function(){
@@ -88,24 +81,18 @@ Level.prototype = {
 			if(this.player !== null){
 				this.player.body.velocity.y = 0;
 				this.player.body.velocity.x = 0;
-
 			}
 
-			if(this.player.combatKeys.switchCombatStyle.isDown){
-				this.player.groupCombatEnabled = !this.player.groupCombatEnabled;
-				this.player.combatKeys.switchCombatStyle.isDown = false;
-				this.updateCombatModeText(this.player.groupCombatEnabled);
-			}
+
+			this.player.readInput(this.enemies);
 			
-			this.player.checkActions({enemies: this.enemies.children});
-
 			for(var i = 0; i < this.enemies.children.length; i++){
 			
 				var enemy = this.enemies.children[i];
 				if(enemy.health > 0){
 					var actionTaken = enemy.takeActions({player: this.player, opponents: [this.player]});
 					if(actionTaken === "attackedPlayer"){
-						this.updatePlayerStatsText(this.player);
+						this.player.updatePlayerStatsText(this.player);
 					}
 				}
 			}
@@ -121,10 +108,27 @@ Level.prototype = {
 
 		},
 		
-		collisionHandlerPlayerAndNPC: function(player, NPC){
-			if(!NPC.conversations[0].ended){
-				this.addText(NPC.name + ": " + NPC.chat(player));
+		collisionHandlerPlayerAndNPC: function(player, npc){
+			if(!this.conversationOpen){
+				this.conversation = new Conversation(this.game, 0, 0, player, npc);
+				this.conversation.inputEnabled = true;
+				this.conversation.input.enableDrag();
+				this.conversation.scale.set(1);
+				this.conversationOpen = true;
+
+				this.game.add.existing(this.conversation);
+				this.conversation.fixedToCamera = true;
+				
+				this.conversation.exitButton.events.onInputDown.add(function(){
+					this.conversation.destroy();
+					this.conversationOpen = false;
+				}, this);
+				
 			}
+
+
+			//this.addText(NPC.name + ": " + NPC.chat(player));
+			
 		},
 
 		pickupItem: function(character,item){
@@ -197,7 +201,7 @@ Level.prototype = {
 		},
 
 		addText: function(text){
-			var bitmapText = this.game.add.bitmapText(10, 430, 'font',text, 16);
+			var bitmapText = this.game.add.bitmapText(10, 630, 'font',text, 16);
 			bitmapText.smoothed = true;
 			this.gameLog.push(bitmapText);
 			this.gameLog[this.gameLog.length-1].fixedToCamera = true;
@@ -261,27 +265,6 @@ Level.prototype = {
 				
 				this.npcs.add(npc);
 			}
-		},
-		
-		updateCombatModeText: function(groupCombatEnabled){
-			if(this.combatModeText !== undefined){
-				this.combatModeText.destroy();
-			}
-
-			this.combatModeText = this.game.add.bitmapText(410, 430, 'font',groupCombatEnabled ? "Combat: Group" : "Combat: Single", 16);
-			this.combatModeText.smoothed = true;
-			this.combatModeText.fixedToCamera = true;
-		},
-		
-		updatePlayerStatsText: function(player){
-			console.log(player.health);
-			if(this.playerHealthText !== undefined){
-				this.playerHealthText.destroy();
-			}
-			
-			this.playerHealthText = this.game.add.bitmapText(410, 450, 'font',"Health: " + player.health, 16);
-			this.playerHealthText.smoothed = true;
-			this.playerHealthText.fixedToCamera = true;
 		}
 };
 
