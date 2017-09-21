@@ -37,7 +37,9 @@ Conversation.prototype.addText = function(text){
 		lineTopMargin = 10;
 		
 		for(var i = 0; i < this.children.length; i++){
-			yPos += this.children[i].textHeight;
+			if(this.children[i].textHeight !== undefined){
+				yPos += this.children[i].textHeight;
+			}
 		}
 	}
 	

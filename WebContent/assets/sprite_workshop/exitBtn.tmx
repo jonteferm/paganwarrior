@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="1" height="1" tilewidth="48" tileheight="48" nextobjectid="1">
+ <tileset firstgid="1" name="uf_interface" tilewidth="48" tileheight="48" tilecount="136" columns="17">
+  <image source="oryx_ultimate_fantasy/uf_interface.png" width="856" height="416"/>
+ </tileset>
+ <tileset firstgid="137" name="uf_terrain" tilewidth="48" tileheight="48" tilecount="760" columns="20">
+  <image source="oryx_ultimate_fantasy/uf_terrain.png" width="960" height="1824"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="1" height="1">
+  <data encoding="csv">
+288
+</data>
+ </layer>
+</map>

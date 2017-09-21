@@ -194,6 +194,8 @@ Character.prototype.takeDamage = function(attacker, attackType){
 };
 
 Character.prototype.equip = function(item, placements, carrier){
+	console.log(carrier.getActiveEquipmentFrameNumber());
+	item.frame = carrier.getActiveEquipmentFrameNumber();
     this.game.add.existing(item);
     this.game.physics.arcade.enable(item);
 	if(this.type = 'player'){

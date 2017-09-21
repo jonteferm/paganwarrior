@@ -168,7 +168,7 @@ Player.prototype.engageSingleCombat = function(enemies){
 		}else if(this.lastDirection === "left"){
 			this.animations.play("hitLeft", 5, false);
 			
-			if(this.equpped.rightHand !== undefined){
+			if(this.equipped.rightHand !== undefined){
 				this.equipped.rightHand.animations.play("left", 5, false);
 				
 				if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
@@ -237,7 +237,10 @@ Player.prototype.engageGroupCombat = function(enemies){
 		console.log("parry: " + nextAttacker.id);
 		
 		this.parryEnemy(nextAttacker);
+		console.log(this.setActiveWeaponFrame());
 	}
+	
+	
 };
 		
 Player.prototype.parryEnemy = function(nextAttacker){
@@ -255,16 +258,22 @@ Player.prototype.parryEnemy = function(nextAttacker){
 		if(xNormDifference > yNormDifference){
 			if(xDifference > 0){
 				this.animations.play("idleRight", 5, false);
+				this.lastDirection = "right";
 			}else{
 				this.animations.play("idleLeft", 5, false);
+				this.lastDirection = "left";
 			}
 		}else if(yNormDifference > xNormDifference){
 			if(yDifference > 0){
 				this.animations.play("idleDown", 5, false);
+				this.lastDirection = "down";
 			}else{
 				this.animations.play("idleUp", 5, false);
+				this.lastDirection = "up";
 			}
 		}
+		
+		this.setActiveWeaponFrame();
 		
 		var parryResult = "failed";
 		
@@ -340,53 +349,23 @@ Player.prototype.readInput = function(enemies){
 		this.body.velocity.y = -96;
 		this.animations.play("up");
 		this.lastDirection = "up";
-		
-		if(this.equipped.rightHand !== undefined){
-			this.equipped.rightHand.frame = 6;
-		}
-		
-		if(this.equipped.leftHand !== undefined){
-			this.equipped.leftHand.frame = 6;
-		}
+		this.setActiveWeaponFrame();
 	}else if(this.wasd.down.isDown){
 		this.body.velocity.y = 96;
 		this.animations.play("down");
 		this.lastDirection = "down";
-
-		if(this.equipped.rightHand !== undefined){
-			this.equipped.rightHand.frame = 9;
-		}
-		
-		if(this.equipped.leftHand !== undefined){
-			this.equipped.leftHand.frame = 9;
-		}
+		this.setActiveWeaponFrame();
 	}else if(this.wasd.left.isDown){
 		this.body.velocity.x = -96;
 		this.animations.play("left");
 		this.lastDirection = "left";
-
-		if(this.equipped.rightHand !== undefined){
-			this.equipped.rightHand.frame = 3;
-		}
-
-		if(this.equipped.leftHand !== undefined){
-			this.equipped.leftHand.frame = 3;
-		}
-	
+		this.setActiveWeaponFrame();
 	}else if(this.wasd.right.isDown){
 		this.body.velocity.x = 96;
 		this.animations.play("right");
 		this.lastDirection = "right";
-
-		if(this.equipped.rightHand !== undefined){
-			this.equipped.rightHand.frame = 0;
-		}
-		
-		if(this.equipped.leftHand !== undefined){
-			this.equipped.leftHand.frame = 0;
-		}
+		this.setActiveWeaponFrame();
 	}
-	
 };
 
 Player.prototype.updateCombatModeText = function(){
@@ -419,6 +398,28 @@ Player.prototype.checkHitEnemy = function(enemy, mouseX, mouseY){
 	}
 
 	return false;
+};
+
+Player.prototype.getActiveEquipmentFrameNumber = function(){
+	if(this.lastDirection === "up"){
+		return 6;
+	}else if(this.lastDirection === "down"){
+		return 9;
+	}else if(this.lastDirection === "left"){
+		return 3;
+	}else if(this.lastDirection === "right"){
+		return 0;
+	}
+};
+
+Player.prototype.setActiveWeaponFrame = function(){
+	if(this.equipped.rightHand !== undefined){
+		this.equipped.rightHand.frame = this.getActiveEquipmentFrameNumber();
+	}
+	
+	if(this.equipped.leftHand !== undefined){
+		this.equipped.leftHand.frame = this.getActiveEquipmentFrameNumber();
+	}
 };
 
 
