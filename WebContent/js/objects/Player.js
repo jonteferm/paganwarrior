@@ -71,7 +71,6 @@ Player = function(game, x, y){
 	};
 	
 	this.keys = {
-		switchCombatStyle: this.game.input.keyboard.addKey(Phaser.Keyboard.C),
 		equipped: this.game.input.keyboard.addKey(Phaser.Keyboard.TAB),
 		inventory: this.game.input.keyboard.addKey(Phaser.Keyboard.I),
 	};
@@ -97,9 +96,6 @@ Player = function(game, x, y){
 
 	
 	this.dmgTextColour = "#ff0000";
-	
-	this.updateCombatModeText();
-	this.updatePlayerStatsText();
 	
 	//Init
 	var startingWeapon = new Weapon(this.game, 0, 0, 'sword');
@@ -337,12 +333,6 @@ Player.prototype.parryEnemy = function(nextAttacker){
 };
 
 Player.prototype.readInput = function(enemies){
-	if(this.keys.switchCombatStyle.isDown){
-		this.groupCombatEnabled = !this.groupCombatEnabled;
-		this.keys.switchCombatStyle.isDown = false;
-		this.updateCombatModeText();
-	}
-	
 	this.checkActions({enemies: enemies.children});
 
 	if(this.wasd.up.isDown){
@@ -367,27 +357,6 @@ Player.prototype.readInput = function(enemies){
 		this.setActiveWeaponFrame();
 	}
 };
-
-Player.prototype.updateCombatModeText = function(){
-	if(this.combatModeText !== undefined){
-		this.combatModeText.destroy();
-	}
-
-	this.combatModeText = this.game.add.bitmapText(630, 630, 'font',this.groupCombatEnabled ? "Combat: Group" : "Combat: Single", 16);
-	this.combatModeText.smoothed = true;
-	this.combatModeText.fixedToCamera = true;
-};
-
-Player.prototype.updatePlayerStatsText = function(){
-	if(this.playerHealthText !== undefined){
-		this.playerHealthText.destroy();
-	}
-	
-	this.playerHealthText = this.game.add.bitmapText(630, 650, 'font',"Health: " + this.health, 16);
-	this.playerHealthText.smoothed = true;
-	this.playerHealthText.fixedToCamera = true;
-};
-
 		
 /*TODO: Gör till generellt checkHit*/
 Player.prototype.checkHitEnemy = function(enemy, mouseX, mouseY){
