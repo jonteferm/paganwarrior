@@ -22,10 +22,26 @@ ControlPanel = function(game, player){
 	this.keys = {switchCombatStyle: this.game.input.keyboard.addKey(Phaser.Keyboard.C)};	
 
 	this.keys.switchCombatStyle.onDown.add(function(){
-		this.player.groupCombatEnabled = !this.player.groupCombatEnabled;
+		if(!this.player.groupCombatEnabled){
+			if(this.player.timeGroupCombated === 0 || (this.game.time.now - this.player.timeGroupCombated < this.player.getGroupCombatCooldownSpeed())){
+				this.player.groupCombatEnabled = true;
+				this.player.groupCombatTime--;
+			}
+		}else{
+			this.player.groupCombatEnabled = false;
+		}
+	
 		this.keys.switchCombatStyle.isDown = false;
 		this.updateCombatModeText();
+
 	}, this);
+	
+	
+	this.attackBar = new TimeBar(this.game, 630, 728, 0xff8811, this.player.getAttackSpeed());
+	this.blockBar = new TimeBar(this.game, 630+40, 728, 0xaaaaaa, this.player.getBlockSpeed());
+	this.groupCombatBar = new TimeBar(this.game, 630+80, 728, 0xffffff, this.player.getGroupCombatCooldownSpeed());
+	this.groupCombatTimeBar = new TimeBar(this.game, 610, 728, 0x0000ff, this.player.maxGroupCombatTime);
+	
 
 };
 
@@ -80,5 +96,13 @@ ControlPanel.prototype.updatePlayerStatsText = function(){
 	this.playerHealthText = this.game.add.bitmapText(630, 650, 'font',"Health: " + this.player.health, 16);
 	this.playerHealthText.smoothed = true;
 	this.playerHealthText.fixedToCamera = true;
+};
+
+ControlPanel.prototype.updateAttackBar = function(){
+	
+};
+
+ControlPanel.prototype.updateBlockBar = function(){
+	
 };
 

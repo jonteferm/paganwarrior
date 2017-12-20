@@ -20,6 +20,9 @@ Player = function(game, x, y){
 	/*---------*/
 	
 	this.groupCombatEnabled = false;
+	this.timeGroupCombated = 0;
+	this.maxGroupCombatTime = 500;
+	this.groupCombatTime = 500;
 
 	this.animations.add('idleRight', [0], 5, true);
 	this.animations.add('right', [0, 1, 2], 5);
@@ -131,8 +134,20 @@ Player.prototype.checkActions = function(levelObjects){
 	this.reachCircle.endFill();
 	
 	if(this.groupCombatEnabled){
+		//TODO: Kolla istället så att inte tiden för groupcobat har gått ut.
 		this.engageGroupCombat(levelObjects.enemies);
 	}
+	
+	if(this.groupCombatTime < this.maxGroupCombatTime){
+		this.groupCombatTime--;
+		
+		if(this.groupCombatTime === 0){
+			this.groupCombatTime = this.maxGroupCombatTime;
+			this.timeGroupCombated = this.game.time.now;
+		}
+	}
+	
+
 	
 	if(this.game.input.activePointer.leftButton.isDown && !this.groupCombatEnabled){
 		this.engageSingleCombat(levelObjects.enemies);
@@ -181,8 +196,6 @@ Player.prototype.engageSingleCombat = function(enemies){
 					this.equipped.leftHand.animations.play("right", 5, false);
 				}
 			}
-
-
 		}
 		
 		for(var i = 0; i < enemies.length; i++){
@@ -192,8 +205,15 @@ Player.prototype.engageSingleCombat = function(enemies){
 				this.enemiesAttacked.push(enemy);
 			}
 		}
+		
 
 		this.timeAttacked = this.game.time.now;
+		
+		if(this.equipped.rightHand !== undefined){
+			if(this.equipped.rightHand.twoHanded){
+				this.timeBlocked = this.game.time.now;
+			}
+		}
 	}
 };
 		
@@ -211,21 +231,21 @@ Player.prototype.engageGroupCombat = function(enemies){
 	//Detect next enemy attack
 	for(var i = 0; i < enemiesInCombatArea.length; i++){
 		var enemy = enemiesInCombatArea[i];
-			if(i === 0){
-				nextAttacker = enemy;
-			}else{
-				if(enemy.timeAttacked > 0){
-					var enemyRecoveryTimeLeft = ((this.getAttackSpeed() + (ENEMY_DIFFICULTY_DIVIDER / this.level)) + enemy.tempCooldownTime) - (this.game.time.now - enemy.timeAttacked);
-					var prevEnemyRecoveryTimeLeft = ((nextAttacker.getAttackSpeed() + (ENEMY_DIFFICULTY_DIVIDER / this.level)) + nextAttacker.tempCooldownTime) - (this.game.time.now - nextAttacker.timeAttacked);
-					
-					if(enemyRecoveryTimeLeft < prevEnemyRecoveryTimeLeft){
-						//TODO: Om samma - slumpa? Inom viss marginal och baserat på skill - slumpa?
-						nextAttacker = enemy;
-						this.waitingTime = prevEnemyRecoveryTimeLeft;
-					}
+		if(i === 0){
+			nextAttacker = enemy;
+		}else{
+			if(enemy.timeAttacked > 0){
+				var enemyRecoveryTimeLeft = ((this.getAttackSpeed() + (ENEMY_DIFFICULTY_DIVIDER / this.level)) + enemy.tempCooldownTime) - (this.game.time.now - enemy.timeAttacked);
+				var prevEnemyRecoveryTimeLeft = ((nextAttacker.getAttackSpeed() + (ENEMY_DIFFICULTY_DIVIDER / this.level)) + nextAttacker.tempCooldownTime) - (this.game.time.now - nextAttacker.timeAttacked);
+				
+				if(enemyRecoveryTimeLeft < prevEnemyRecoveryTimeLeft){
+					//TODO: Om samma - slumpa? Inom viss marginal och baserat på skill - slumpa?
+					nextAttacker = enemy;
+					this.waitingTime = prevEnemyRecoveryTimeLeft;
 				}
-
 			}
+
+		}
 	}
 	
 	if(nextAttacker !== null){
@@ -235,8 +255,6 @@ Player.prototype.engageGroupCombat = function(enemies){
 		this.parryEnemy(nextAttacker);
 		console.log(this.setActiveWeaponFrame());
 	}
-	
-	
 };
 		
 Player.prototype.parryEnemy = function(nextAttacker){
@@ -250,7 +268,7 @@ Player.prototype.parryEnemy = function(nextAttacker){
 	//console.log("xNormDifference: " + xNormDifference);
 	//console.log("yNormDifference: " + yNormDifference);
 
-	if(this.game.time.now - this.timeAttacked > (this.getBlockSpeed()) ){
+	if(this.game.time.now - this.timeBlocked > (this.getBlockSpeed()) ){
 		if(xNormDifference > yNormDifference){
 			if(xDifference > 0){
 				this.animations.play("idleRight", 5, false);
@@ -328,7 +346,11 @@ Player.prototype.parryEnemy = function(nextAttacker){
 				break;
 		}
 		
-		this.timeAttacked = this.game.time.now;
+		this.timeBlocked = this.game.time.now;
+		
+		if(this.equipped.rightHand.twoHanded){
+			this.timeAttacked = this.game.time.now;
+		}
 	}
 };
 
@@ -389,6 +411,10 @@ Player.prototype.setActiveWeaponFrame = function(){
 	if(this.equipped.leftHand !== undefined){
 		this.equipped.leftHand.frame = this.getActiveEquipmentFrameNumber();
 	}
+};
+
+Character.prototype.getGroupCombatCooldownSpeed = function(){
+	return GROUPCOMBATSPEED_COUNTERWEIGHT - (5 * GROUPCOMBATSPEED_MULTIPLIER);
 };
 
 

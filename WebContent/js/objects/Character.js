@@ -55,6 +55,10 @@ Character.prototype.getAttackSpeed = function(){
 };
 
 Character.prototype.getBlockSpeed = function(){
+	if(this.equipped.rightHand !== undefined && this.equipped.rightHand.twoHanded){
+		return this.getAttackSpeed();
+	}
+	
 	return BLOCKSPEED_COUNTERWEIGHT - (this.blockSpeed * BLOCKSPEED_MULTIPLIER);
 };
 

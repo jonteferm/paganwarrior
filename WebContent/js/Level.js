@@ -51,6 +51,11 @@ Level.prototype = {
 		this.player.body.setSize(13,32,16,9);
 
 		this.controlPanel = new ControlPanel(this.game, this.player);
+		
+		this.player.game.controlPanel = this.controlPanel;
+		
+		
+		
 	},
 
 	update: function(){
@@ -85,7 +90,24 @@ Level.prototype = {
 				}
 			}
 		}
-	
+		
+		if(this.player.timeAttacked > 0){
+			this.controlPanel.attackBar.updateProgress(this.game.time.now - this.player.timeAttacked, this.player.getAttackSpeed());
+		}
+		
+		if(this.player.timeBlocked > 0){
+			this.controlPanel.blockBar.updateProgress(this.game.time.now - this.player.timeBlocked, this.player.getBlockSpeed());
+		}
+		
+		console.log(this.player.timeGroupCombated);
+		
+		if(this.player.timeGroupCombated > 0){
+			this.controlPanel.groupCombatBar.updateProgress(this.game.time.now - this.player.timeGroupCombated, this.player.getGroupCombatCooldownSpeed());
+		}
+
+		if(this.player.groupCombatTime !== this.player.maxGroupCombatTime && this.player.groupCombatTime > 0){
+			this.controlPanel.groupCombatTimeBar.updateProgress(this.player.groupCombatTime, this.player.maxGroupCombatTime);
+		}
 	},
 
 	collisionHandlerPlayerAndEnemy: function(player, enemy){
@@ -115,9 +137,7 @@ Level.prototype = {
 			
 		}
 
-
 		//this.addText(NPC.name + ": " + NPC.chat(player));
-		
 	},
 
 	pickupItem: function(character,item){
