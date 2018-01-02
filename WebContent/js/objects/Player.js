@@ -196,6 +196,8 @@ Player.prototype.engageSingleCombat = function(enemies){
 					this.equipped.leftHand.animations.play("right", 5, false);
 				}
 			}
+		}else if(this.lastDirection === "up"){
+			//TODO: Add up-animation
 		}
 		
 		for(var i = 0; i < enemies.length; i++){
