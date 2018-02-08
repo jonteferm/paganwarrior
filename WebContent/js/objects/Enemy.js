@@ -2,9 +2,7 @@ Enemy = function(game, x, y, type){
 	Character.call(this, game, x, y, type);
 	
 	this.name = "Enemy";
-	this.equipped = {
-		chest: {name: "chainmail", type: "armor", damage: 0, protection: 1},
-	};
+
 
 	this.health = 10;
 	this.dexterity = 13;
@@ -27,8 +25,25 @@ Enemy = function(game, x, y, type){
 	
 	this.enemyAttacked;
 
-    this.animations.add('right', [0,1], 10, true);
-	this.animations.add('left', [2,3], 10, true);
+	this.animations.add('idleRight', [0], 5, true);
+	this.animations.add('right', [0, 1, 2], 5);
+	this.animations.add('hitRight', [0, 3, 4], 5, true);
+	this.animations.add('idleLeft', [5], 5, true);
+	this.animations.add('left', [5, 6, 7], 5);
+	this.animations.add('hitLeft', [5, 8, 9], 5, true);
+	this.animations.add('idleUp', [10], 5, true);
+	this.animations.add('up', [10, 11, 12], 5);
+	this.animations.add('idleDown', [15], 5, true);
+	this.animations.add('down', [15, 16, 17], 5);
+	this.animations.add('hitDown', [15, 18, 19], 5, true);
+	
+	var weapon = new Weapon(this.game, 0, 0, 'sword');
+	
+	this.equipped = {
+			chest: {name: "chainmail", type: "armor", damage: 0, protection: 1},
+			rightHand: this.addChild(weapon),
+			leftHand: weapon
+	};
 
 	this.events.onAnimationComplete.add(function(self, animation){			
 		this.animations.stop(true, true);
@@ -53,19 +68,30 @@ Enemy.prototype.checkSpotPlayer = function(playerX, playerY){
 };
 		
 Enemy.prototype.makeMovement = function(playerX, playerY){
-	if((this.y > playerY + SPRITE_SIZE || this.y < playerY - SPRITE_SIZE) || (this.x > playerX + SPRITE_SIZE || this.x < playerX - SPRITE_SIZE)){
-		if(playerY > this.y){
-			this.body.velocity.y = 80;
-		}else if(playerY < this.y){
+	if((this.y > playerY + SPRITE_SIZE || this.y < playerY - SPRITE_SIZE) || (this.x > playerX + SPRITE_SIZE || this.x < playerX - SPRITE_SIZE)){				
+		var verticalDifference = this.y > playerY ? this.y - playerY : playerY - this.y;
+		var horizontalDifference = this.x > playerX ? this.x - playerX : playerX - this.x;
+		
+		if((playerY < this.y) && (verticalDifference > horizontalDifference)){
 			this.body.velocity.y = -80;
-		}
-
-		if(playerX > this.x){
-			this.body.velocity.x = 80;
-			this.animations.play("right");
-		}else if(playerX < this.x){
+			this.animations.play("up");
+			this.lastDirection = "up";
+			this.setActiveWeaponFrame();
+		}else if((playerY > this.y) && (verticalDifference > horizontalDifference)){
+			this.body.velocity.y = 80;
+			this.animations.play("down");
+			this.lastDirection = "down";
+			this.setActiveWeaponFrame();
+		}else if((playerX < this.x) && (horizontalDifference > verticalDifference)){
 			this.body.velocity.x = -80;
 			this.animations.play("left");
+			this.lastDirection = "left";
+			this.setActiveWeaponFrame();
+		}else if((playerX > this.x) && (horizontalDifference > verticalDifference)){
+			this.body.velocity.x = 80;
+			this.animations.play("right");
+			this.lastDirection = "right";
+			this.setActiveWeaponFrame();
 		}
 	}
 };
@@ -97,6 +123,8 @@ Enemy.prototype.takeActions = function(levelObjects){
 			});
 
 			if(this.game.time.now - this.timeAttacked > (((this.getAttackSpeed() + (ENEMY_DIFFICULTY_DIVIDER / this.level)) + this.tempCooldownTime) + 500)){
+				this.playCombatAnimations();
+				
 				this.timeAttacked = this.game.time.now;
 				console.log("enemy " + this.id + " strikes player!");
 				opponent.takeDamage(this, "primary");
@@ -106,5 +134,16 @@ Enemy.prototype.takeActions = function(levelObjects){
 				return "attackedPlayer";
 			}	
 		}
+	}
+};
+
+Enemy.prototype.setActiveWeaponFrame = function(){
+	if(this.equipped.rightHand !== undefined){
+		console.log(this.getActiveEquipmentFrameNumber());
+		this.equipped.rightHand.frame = this.getActiveEquipmentFrameNumber();
+	}
+	
+	if(this.equipped.leftHand !== undefined){
+		this.equipped.leftHand.frame = this.getActiveEquipmentFrameNumber();
 	}
 };

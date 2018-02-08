@@ -1,5 +1,5 @@
 {
-    "level": [
+    "level2": [
         {
             "type": "spritesheet",
             "key": "player",
@@ -135,12 +135,6 @@
             "overwrite": false
         },
         {
-            "type": "tilemap",
-            "key": "oryxtiles2",
-            "url": "assets/tilemaps/oryxtiles2.json",
-            "format": "TILED_JSON"
-        },
-        {
             "type": "image",
             "key": "trees",
             "url": "assets/images/trees.png",
@@ -175,14 +169,14 @@
             "spacing": 0
         },
         {
-            "type": "image",
-            "key": "next",
-            "url": "assets/images/next.png",
-            "overwrite": false
+            "type": "tilemap",
+            "key": "oryxtiles3",
+            "url": "assets/tilemaps/oryxtiles3.json",
+            "format": "TILED_JSON"
         }
     ],
     "meta": {
-        "generated": "1518125905771",
+        "generated": "1518128200435",
         "app": "Phaser Editor",
         "url": "http://phasereditor.boniatillo.com",
         "version": "1.0",

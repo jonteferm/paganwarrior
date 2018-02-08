@@ -166,39 +166,7 @@ Player.prototype.checkActions = function(levelObjects){
 		
 Player.prototype.engageSingleCombat = function(enemies){
 	if(this.game.time.now - this.timeAttacked > this.getAttackSpeed()){
-		if(this.lastDirection === "down"){
-			this.animations.play("hitDown", 5, false);
-			
-			if(this.equipped.rightHand != undefined){
-				this.equipped.rightHand.animations.play("down", 5, false);
-				
-				if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
-					this.equipped.leftHand.animations.play("down", 5, false);
-				}
-			}	
-		}else if(this.lastDirection === "left"){
-			this.animations.play("hitLeft", 5, false);
-			
-			if(this.equipped.rightHand !== undefined){
-				this.equipped.rightHand.animations.play("left", 5, false);
-				
-				if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
-					this.equipped.leftHand.animations.play("left", 5, false);
-				}
-			}
-		}else if(this.lastDirection === "right"){
-			this.animations.play("hitRight", 5, false);
-			
-			if(this.equipped.rightHand !== undefined){
-				this.equipped.rightHand.animations.play("right", 5, false);
-				
-				if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== undefined){
-					this.equipped.leftHand.animations.play("right", 5, false);
-				}
-			}
-		}else if(this.lastDirection === "up"){
-			//TODO: Add up-animation
-		}
+		this.playCombatAnimations();
 		
 		for(var i = 0; i < enemies.length; i++){
 			var enemy = enemies[i];
@@ -208,7 +176,6 @@ Player.prototype.engageSingleCombat = function(enemies){
 			}
 		}
 		
-
 		this.timeAttacked = this.game.time.now;
 		
 		if(this.equipped.rightHand !== undefined){
@@ -391,18 +358,6 @@ Player.prototype.checkHitEnemy = function(enemy, mouseX, mouseY){
 	}
 
 	return false;
-};
-
-Player.prototype.getActiveEquipmentFrameNumber = function(){
-	if(this.lastDirection === "up"){
-		return 6;
-	}else if(this.lastDirection === "down"){
-		return 9;
-	}else if(this.lastDirection === "left"){
-		return 3;
-	}else if(this.lastDirection === "right"){
-		return 0;
-	}
 };
 
 Player.prototype.setActiveWeaponFrame = function(){

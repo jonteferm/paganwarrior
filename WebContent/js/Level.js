@@ -16,7 +16,12 @@ Door.prototype = Object.create(Phaser.Sprite.prototype);
 
 Level.prototype = {
 	create: function(){
-		this.map = this.game.add.tilemap('oryxtiles2');
+		if(this.game.state.current === 'level'){
+			this.map = this.game.add.tilemap('oryxtiles2');
+		}else if(this.game.state.current === 'level2'){
+			this.map = this.game.add.tilemap('oryxtiles3');
+		}
+	
 		this.map.addTilesetImage('tiles', 'tiles');
 		//this.map.addTilesetImage('tilesLightForest', 'tilesLightForest');
 		//this.map.addTilesetImage('tilesAutumn', 'tilesAutumn');
@@ -28,10 +33,12 @@ Level.prototype = {
 
 		this.backgroundLayer = this.map.createLayer('backgroundLayer', 768, 768);
 		this.blockLayer = this.map.createLayer('blockLayer', 768, 768 );
-		this.backgroundLayer = this.map.createLayer('treeLayer', 768, 768);
+		this.treeLayer = this.map.createLayer('treeLayer', 768, 768);
+		this.lowerTreeLayer = this.map.createLayer('lowerTreeLayer', 768, 768);
 		this.backgroundLayer = this.map.createLayer('lesserObjectsLayer', 768, 768);
 
 	    this.map.setCollisionBetween(1, 3000, true, 'blockLayer');
+	    this.map.setCollisionBetween(1, 3000, true, 'lowerTreeLayer');
 
 	    this.backgroundLayer.resizeWorld();
 
@@ -40,6 +47,7 @@ Level.prototype = {
 		
 		this.spawnEnemies(this.map);
 		this.spawnNpcs(this.map);
+		this.setEntryPoints(this.map); 
 		
 		this.game.canvas.oncontextmenu = function (e) { e.preventDefault(); };
 		
@@ -62,8 +70,11 @@ Level.prototype = {
 		this.game.physics.arcade.collide(this.player, this.blockLayer, this.handleWall);
 		this.game.physics.arcade.overlap(this.player, this.items, this.pickupItem, null, this);
 		this.game.physics.arcade.collide(this.player, this.doors, this.handleDoor, null, this);
+		this.game.physics.arcade.collide(this.player, this.lowerTreeLayer, this.handleWall);
+		this.game.physics.arcade.overlap(this.player, this.entryPoints, this.changeLevel);
 		
 		this.game.physics.arcade.collide(this.enemies, this.blockLayer);
+		this.game.physics.arcade.collide(this.enemies, this.lowerTreeLayer);
 		this.enemies.setAll('body.immovable', true);
 		this.npcs.setAll('body.immovable', true);
 		this.game.physics.arcade.collide(this.player, this.enemies, this.collisionHandlerPlayerAndEnemy, null, this);
@@ -218,7 +229,7 @@ Level.prototype = {
 		
 		for(var i = 0; i < enemyStartPositions.length; i++){
 			var enemyStart = enemyStartPositions[i];
-			var enemy = new Enemy(this.game, enemyStart.x, enemyStart.y, 'cultist');
+			var enemy = new Enemy(this.game, enemyStart.x, enemyStart.y, 'enemyfootman');
 			
 			enemy.id = i;
 			
@@ -243,6 +254,26 @@ Level.prototype = {
 			
 			this.npcs.add(npc);
 		}
+	},
+	
+	setEntryPoints: function(map){
+		this.entryPoints = this.game.add.group();
+		this.entryPoints.enableBody = true;
+		this.game.physics.arcade.enable(this.entryPoints);
+		
+		var levelEntryPoints = this.findObjectsByType('levelEntryPoint', map, 'objectLayer');
+		
+		for(var i = 0; i < levelEntryPoints.length; i++){
+			var levelEntryPoint = levelEntryPoints[i];
+			
+			var entryPoint = new EntryPoint(this.game, levelEntryPoint.x, levelEntryPoint.y);
+			
+			this.entryPoints.add(entryPoint);
+		}
+	},
+	
+	changeLevel: function(player, entryPoint){
+		entryPoint.changeLevel();
 	}
 };
 

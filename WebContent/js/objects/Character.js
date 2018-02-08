@@ -218,3 +218,51 @@ Character.prototype.equip = function(item, placements, carrier){
 Character.prototype.store = function(item){
 	this.inventory.add(item, this);
 };
+
+Character.prototype.getActiveEquipmentFrameNumber = function(){
+	if(this.lastDirection === "up"){
+		return 6;
+	}else if(this.lastDirection === "down"){
+		return 9;
+	}else if(this.lastDirection === "left"){
+		return 3;
+	}else if(this.lastDirection === "right"){
+		return 0;
+	}
+};
+
+Character.prototype.playCombatAnimations = function(){
+	if(this.lastDirection === "down"){
+		this.animations.play("hitDown", 5, false);
+		
+		if(this.equipped.rightHand != undefined){
+			this.equipped.rightHand.animations.play("down", 5, false);
+			
+			if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
+				this.equipped.leftHand.animations.play("down", 5, false);
+			}
+		}	
+	}else if(this.lastDirection === "left"){
+		this.animations.play("hitLeft", 5, false);
+		
+		if(this.equipped.rightHand !== undefined){
+			this.equipped.rightHand.animations.play("left", 5, false);
+			
+			if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
+				this.equipped.leftHand.animations.play("left", 5, false);
+			}
+		}
+	}else if(this.lastDirection === "right"){
+		this.animations.play("hitRight", 5, false);
+		
+		if(this.equipped.rightHand !== undefined){
+			this.equipped.rightHand.animations.play("right", 5, false);
+			
+			if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== undefined){
+				this.equipped.leftHand.animations.play("right", 5, false);
+			}
+		}
+	}else if(this.lastDirection === "up"){
+		//TODO: Add up-animation
+	}
+};
