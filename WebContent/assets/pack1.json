@@ -73,7 +73,7 @@
         {
             "type": "spritesheet",
             "key": "sword",
-            "url": "assets/images/sword.png",
+            "url": "assets/images/Sword.png",
             "frameWidth": 48,
             "frameHeight": 48,
             "frameMax": -1,
@@ -182,7 +182,7 @@
         }
     ],
     "meta": {
-        "generated": "1518125905771",
+        "generated": "1523221312013",
         "app": "Phaser Editor",
         "url": "http://phasereditor.boniatillo.com",
         "version": "1.0",

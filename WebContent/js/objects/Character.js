@@ -264,5 +264,13 @@ Character.prototype.playCombatAnimations = function(){
 		}
 	}else if(this.lastDirection === "up"){
 		//TODO: Add up-animation
+	}else if(this.lastDirection === "rightDown"){
+		this.animations.play("hitRightDown");
+	}else if(this.lastDirection === "leftDown"){
+		this.animations.play("hitLeftDown");
+	}else if(this.lastDirection === "rightUp"){
+		this.animations.play("hitRightUp");
+	}else if(this.lastDirection === "leftUp"){
+		this.animations.play("hitLeftUp");
 	}
 };

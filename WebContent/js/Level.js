@@ -21,7 +21,7 @@ Level.prototype = {
 		}else if(this.game.state.current === 'level2'){
 			this.map = this.game.add.tilemap('oryxtiles3');
 		}
-	
+
 		this.map.addTilesetImage('tiles', 'tiles');
 		//this.map.addTilesetImage('tilesLightForest', 'tilesLightForest');
 		//this.map.addTilesetImage('tilesAutumn', 'tilesAutumn');
@@ -35,7 +35,34 @@ Level.prototype = {
 		this.blockLayer = this.map.createLayer('blockLayer', 768, 768 );
 		this.treeLayer = this.map.createLayer('treeLayer', 768, 768);
 		this.lowerTreeLayer = this.map.createLayer('lowerTreeLayer', 768, 768);
-		this.backgroundLayer = this.map.createLayer('lesserObjectsLayer', 768, 768);
+		this.lesserObjectsLayer = this.map.createLayer('lesserObjectsLayer', 768, 768);
+		
+		this.pathfinder = this.game.plugins.add(Phaser.Plugin.PathFinderPlugin);
+		
+		//TODO: Hitta alla walkable tiles i lagren
+		console.log(this.map.layers);
+		
+		var grid = [];
+		var walkables = [];
+		
+		var counter = 0;
+		for(var i = 0; i < 17; i++){
+			grid[i] = [];
+			for(var j = 0; j < 16; j++){
+				grid[i].push(counter);
+				
+				//TODO: Kolla alla lager
+				console.log(this.blockLayer.layer.data[i][j]);
+				
+				counter ++;
+			}
+		}
+		
+		console.log(grid);
+		console.log(walkables);
+		
+		this.pathfinder.setGrid(this.map.layers[0].data, walkables);
+	
 
 	    this.map.setCollisionBetween(1, 3000, true, 'blockLayer');
 	    this.map.setCollisionBetween(1, 3000, true, 'lowerTreeLayer');
@@ -57,13 +84,10 @@ Level.prototype = {
 	    this.game.physics.arcade.enable(this.player);
 	    this.game.camera.follow(this.player);
 		this.player.body.setSize(13,32,16,9);
-
+	
 		this.controlPanel = new ControlPanel(this.game, this.player);
 		
 		this.player.game.controlPanel = this.controlPanel;
-		
-		
-		
 	},
 
 	update: function(){
@@ -82,7 +106,6 @@ Level.prototype = {
 		this.enemies.setAll('body.immovable', false);
 		this.game.physics.arcade.collide(this.enemies, this.enemies, this.collisionHandlerEnemyAndEnemy);
 
-
 		if(this.player !== null){
 			this.player.body.velocity.y = 0;
 			this.player.body.velocity.x = 0;
@@ -92,10 +115,10 @@ Level.prototype = {
 		this.player.readInput(this.enemies);
 		
 		for(var i = 0; i < this.enemies.children.length; i++){
-		
 			var enemy = this.enemies.children[i];
+			
 			if(enemy.health > 0){
-				var actionTaken = enemy.takeActions({player: this.player, opponents: [this.player]});
+				var actionTaken = enemy.takeActions({player: this.player, opponents: [this.player], layer: this.backgroundLayer, pathfinder: this.pathfinder});
 				if(actionTaken === "attackedPlayer"){
 					this.controlPanel.updatePlayerStatsText();
 				}
@@ -110,7 +133,7 @@ Level.prototype = {
 			this.controlPanel.blockBar.updateProgress(this.game.time.now - this.player.timeBlocked, this.player.getBlockSpeed());
 		}
 		
-		console.log(this.player.timeGroupCombated);
+		//console.log(this.player.timeGroupCombated);
 		
 		if(this.player.timeGroupCombated > 0){
 			this.controlPanel.groupCombatBar.updateProgress(this.game.time.now - this.player.timeGroupCombated, this.player.getGroupCombatCooldownSpeed());
@@ -127,7 +150,6 @@ Level.prototype = {
 		enemy.body.velocity.x = 0;
 		enemy.body.velocity.y = 0;
 		enemy.animations.stop();
-
 	},
 	
 	collisionHandlerPlayerAndNPC: function(player, npc){
@@ -149,6 +171,10 @@ Level.prototype = {
 		}
 
 		//this.addText(NPC.name + ": " + NPC.chat(player));
+	},
+	
+	collisionHandlerEnemyAndEnemy: function(enemy1, enemy2){
+
 	},
 
 	pickupItem: function(character,item){

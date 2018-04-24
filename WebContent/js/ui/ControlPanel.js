@@ -5,7 +5,7 @@ ControlPanel = function(game, player){
 	var graphics = game.add.graphics();
 	
 	graphics.beginFill(0x000000, 1);
-	this.gamePanel = graphics.drawRect(0, 768, 768, -142);
+	this.gamePanel = graphics.drawRect(0, 768, 768, -286);
 	graphics.endFill();
 	this.gamePanel.fixedToCamera = true;
 
@@ -37,18 +37,40 @@ ControlPanel = function(game, player){
 	}, this);
 	
 	
-	this.attackBar = new TimeBar(this.game, 630, 728, 0xff8811, this.player.getAttackSpeed());
-	this.blockBar = new TimeBar(this.game, 630+40, 728, 0xaaaaaa, this.player.getBlockSpeed());
-	this.groupCombatBar = new TimeBar(this.game, 630+80, 728, 0xffffff, this.player.getGroupCombatCooldownSpeed());
-	this.groupCombatTimeBar = new TimeBar(this.game, 610, 728, 0x0000ff, this.player.maxGroupCombatTime);
+	this.attackBar = new TimeBar(this.game, 486, 600, 0xff8811, this.player.getAttackSpeed());
+	this.blockBar = new TimeBar(this.game, 486+40, 600, 0xaaaaaa, this.player.getBlockSpeed());
+	this.groupCombatBar = new TimeBar(this.game, 486+120, 600, 0xffffff, this.player.getGroupCombatCooldownSpeed());
+	this.groupCombatTimeBar = new TimeBar(this.game, 486+180, 600, 0x0000ff, this.player.maxGroupCombatTime);
 	
-
+	this.attackBarText = this.game.add.bitmapText(476, 600, 'font', "Attack", 16);
+	this.attackBarText.smoothed = true;
+	this.attackBarText.fixedToCamera = true;
+	
+	this.blockBarText = this.game.add.bitmapText(486+35, 600, 'font', "Block", 16);
+	this.blockBarText.smoothed = true;
+	this.blockBarText.fixedToCamera = true;
+	
+	this.groupCombatBarText = this.game.add.bitmapText(486+110, 520, 'font', "GROUP COMBAT", 16);
+	this.groupCombatBarText.smoothed = true;
+	this.groupCombatBarText.fixedToCamera = true;
+	
+	this.groupCombatBarText = this.game.add.bitmapText(486+110, 521, 'font', "_____________", 16);
+	this.groupCombatBarText.smoothed = true;
+	this.groupCombatBarText.fixedToCamera = true;
+	
+	this.groupCombatBarText = this.game.add.bitmapText(486+100, 600, 'font', "Cooldown", 16);
+	this.groupCombatBarText.smoothed = true;
+	this.groupCombatBarText.fixedToCamera = true;
+	
+	this.groupCombatTimeBarText = this.game.add.bitmapText(486+175, 600, 'font', "Time", 16);
+	this.groupCombatTimeBarText.smoothed = true;
+	this.groupCombatTimeBarText.fixedToCamera = true;
 };
 
 ControlPanel.prototype.constructor = ControlPanel;
 
 ControlPanel.prototype.addText = function(text){
-	var bitmapText = this.game.add.bitmapText(10, 630, 'font',text, 16);
+	var bitmapText = this.game.add.bitmapText(10, 486, 'font',text, 16);
 	bitmapText.smoothed = true;
 	this.gameLog.push(bitmapText);
 	this.gameLog[this.gameLog.length-1].fixedToCamera = true;
@@ -83,7 +105,7 @@ ControlPanel.prototype.updateCombatModeText = function(){
 		this.combatModeText.destroy();
 	}
 
-	this.combatModeText = this.game.add.bitmapText(630, 630, 'font',this.player.groupCombatEnabled ? "Combat: Group" : "Combat: Single", 16);
+	this.combatModeText = this.game.add.bitmapText(486, 486, 'font',this.player.groupCombatEnabled ? "Combat: Group" : "Combat: Single", 16);
 	this.combatModeText.smoothed = true;
 	this.combatModeText.fixedToCamera = true;
 };
@@ -93,7 +115,7 @@ ControlPanel.prototype.updatePlayerStatsText = function(){
 		this.playerHealthText.destroy();
 	}
 	
-	this.playerHealthText = this.game.add.bitmapText(630, 650, 'font',"Health: " + this.player.health, 16);
+	this.playerHealthText = this.game.add.bitmapText(486, 506, 'font',"Health: " + this.player.health, 16);
 	this.playerHealthText.smoothed = true;
 	this.playerHealthText.fixedToCamera = true;
 };

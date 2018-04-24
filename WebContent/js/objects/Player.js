@@ -316,7 +316,7 @@ Player.prototype.parryEnemy = function(nextAttacker){
 		}
 		
 		this.timeBlocked = this.game.time.now;
-		
+		console.log(this.equipped);
 		if(this.equipped.rightHand.twoHanded){
 			this.timeAttacked = this.game.time.now;
 		}
