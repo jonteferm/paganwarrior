@@ -52,16 +52,21 @@ Level.prototype = {
 				grid[i].push(counter);
 				
 				//TODO: Kolla alla lager
-				console.log(this.blockLayer.layer.data[i][j]);
+				//console.log(this.blockLayer.layer.data[i][j].index === -1);
+
+				if(this.blockLayer.layer.data[i][j].index === -1 && this.treeLayer.layer.data[i][j].index === -1){
+
+					walkables.push(counter);
+				}
 				
 				counter ++;
 			}
 		}
 		
-		console.log(grid);
-		console.log(walkables);
+		console.log("grid", grid);
+		console.log("walkables", walkables);
 		
-		this.pathfinder.setGrid(this.map.layers[0].data, walkables);
+		this.pathfinder.setGrid(grid, walkables);
 	
 
 	    this.map.setCollisionBetween(1, 3000, true, 'blockLayer');

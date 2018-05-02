@@ -151,7 +151,7 @@ Enemy.prototype.takeActions = function(levelObjects){
 	    	console.log(path);
 	        path = path || [];
 	        
-	        console.log(path);
+	        console.log("PATH: ", path);
 	      
 	    });
 	    
