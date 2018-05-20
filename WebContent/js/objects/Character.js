@@ -231,46 +231,30 @@ Character.prototype.getActiveEquipmentFrameNumber = function(){
 	}
 };
 
-Character.prototype.playCombatAnimations = function(){
-	if(this.lastDirection === "down"){
-		this.animations.play("hitDown", 5, false);
-		
-		if(this.equipped.rightHand != undefined){
-			this.equipped.rightHand.animations.play("down", 5, false);
-			
-			if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
-				this.equipped.leftHand.animations.play("down", 5, false);
-			}
-		}	
-	}else if(this.lastDirection === "left"){
-		this.animations.play("hitLeft", 5, false);
-		
-		if(this.equipped.rightHand !== undefined){
-			this.equipped.rightHand.animations.play("left", 5, false);
-			
-			if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
-				this.equipped.leftHand.animations.play("left", 5, false);
-			}
+Character.prototype.getTargetDirection = function(target){
+	var verticalDifference = this.y > target.y ? this.y - target.y : target.y - this.y;
+	var horizontalDifference = this.x > target.x ? this.x - target.x : target.x - this.x;
+	
+	if(target.y < this.y && (verticalDifference > horizontalDifference)){
+		if(this.x - target.x <= -48){
+			return "rightUp";
+		}else if(this.x - target.x >= 24) {
+			return "leftUp";
+		}else{
+			return "up";
 		}
-	}else if(this.lastDirection === "right"){
-		this.animations.play("hitRight", 5, false);
-		
-		if(this.equipped.rightHand !== undefined){
-			this.equipped.rightHand.animations.play("right", 5, false);
-			
-			if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== undefined){
-				this.equipped.leftHand.animations.play("right", 5, false);
-			}
+	}else if((target.y > this.y) && (verticalDifference > horizontalDifference)){
+		if(this.x - target.x <= -48){
+			return "rightDown";
+		}else if(this.x - target.x >= 24) {
+			return "leftDown";
+		}else{
+			return "down";
 		}
-	}else if(this.lastDirection === "up"){
-		//TODO: Add up-animation
-	}else if(this.lastDirection === "rightDown"){
-		this.animations.play("hitRightDown");
-	}else if(this.lastDirection === "leftDown"){
-		this.animations.play("hitLeftDown");
-	}else if(this.lastDirection === "rightUp"){
-		this.animations.play("hitRightUp");
-	}else if(this.lastDirection === "leftUp"){
-		this.animations.play("hitLeftUp");
+		//this.setActiveWeaponFrame();
+	}else if((target.x < this.x) && (horizontalDifference > verticalDifference)){
+		return "left";
+	}else if((target.x > this.x) && (horizontalDifference > verticalDifference)){
+		return "right";
 	}
 };

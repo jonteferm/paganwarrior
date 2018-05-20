@@ -370,7 +370,51 @@ Player.prototype.setActiveWeaponFrame = function(){
 	}
 };
 
-Character.prototype.getGroupCombatCooldownSpeed = function(){
+Player.prototype.playCombatAnimations = function(){
+	if(this.lastDirection === "down"){
+		this.animations.play("hitDown", 5, false);
+		
+		if(this.equipped.rightHand != undefined){
+			this.equipped.rightHand.animations.play("down", 5, false);
+			
+			if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
+				this.equipped.leftHand.animations.play("down", 5, false);
+			}
+		}	
+	}else if(this.lastDirection === "left"){
+		this.animations.play("hitLeft", 5, false);
+		
+		if(this.equipped.rightHand !== undefined){
+			this.equipped.rightHand.animations.play("left", 5, false);
+			
+			if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
+				this.equipped.leftHand.animations.play("left", 5, false);
+			}
+		}
+	}else if(this.lastDirection === "right"){
+		this.animations.play("hitRight", 5, false);
+		
+		if(this.equipped.rightHand !== undefined){
+			this.equipped.rightHand.animations.play("right", 5, false);
+			
+			if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== undefined){
+				this.equipped.leftHand.animations.play("right", 5, false);
+			}
+		}
+	}else if(this.lastDirection === "up"){
+		//TODO: Add up-animation
+	}else if(this.lastDirection === "rightDown"){
+		this.animations.play("hitRightDown");
+	}else if(this.lastDirection === "leftDown"){
+		this.animations.play("hitLeftDown");
+	}else if(this.lastDirection === "rightUp"){
+		this.animations.play("hitRightUp");
+	}else if(this.lastDirection === "leftUp"){
+		this.animations.play("hitLeftUp");
+	}
+};
+
+Player.prototype.getGroupCombatCooldownSpeed = function(){
 	return GROUPCOMBATSPEED_COUNTERWEIGHT - (5 * GROUPCOMBATSPEED_MULTIPLIER);
 };
 

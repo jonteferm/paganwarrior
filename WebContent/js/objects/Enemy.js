@@ -49,6 +49,12 @@ Enemy = function(game, x, y, type){
 	this.animations.add('down', [15, 16, 17], 5);
 	this.animations.add('hitDown', [15, 18, 19], 5, true);
 	
+	this.path;
+	this.timeSincePathCalc = 0;
+	this.currentPathMilestone;
+	this.pathStepsFinished = 0;
+	this.timeSinceDirectionChange = 0;
+	
 	var weapon = new Weapon(this.game, 0, 0, 'sword');
 	
 	this.equipped = {
@@ -79,89 +85,94 @@ Enemy.prototype.checkSpotPlayer = function(playerX, playerY){
 	}
 };
 		
-Enemy.prototype.makeMovement = function(playerX, playerY){
-	if((this.y > playerY + SPRITE_SIZE || this.y < playerY - SPRITE_SIZE) || (this.x > playerX + SPRITE_SIZE || this.x < playerX - SPRITE_SIZE)){				
-		var verticalDifference = this.y > playerY ? this.y - playerY : playerY - this.y;
-		var horizontalDifference = this.x > playerX ? this.x - playerX : playerX - this.x;
+Enemy.prototype.makeMovement = function(velocity, target){
 
-		/*console.log(verticalDifference);
-		console.log(horizontalDifference);
-		console.log("playerX: " + playerX + ", this.x: " + this.x);
-		console.log("playerY: " + playerY + ", this.y: " + this.y);
-		console.log(this.x - playerX);*/
-		
-		if((playerY < this.y) && (verticalDifference > horizontalDifference)){
-			if(this.x - playerX <= -48){
-				this.body.velocity.y = -40;
-				this.body.velocity.x = 40;
-				this.animations.play("rightUp");
-				this.lastDirection = "rightUp";
-			}else if(this.x - playerX >= 24) {
-				this.body.velocity.y = -40;
-				this.body.velocity.x = -40;
-				this.animations.play("leftUp");
-				this.lastDirection = "leftUp";
-			}else{
-				this.body.velocity.y = -80;
-				this.animations.play("up");
-				this.lastDirection = "up";
-			}
-			
-			//this.setActiveWeaponFrame();
-		}else if((playerY > this.y) && (verticalDifference > horizontalDifference)){
-			if(this.x - playerX <= -48){
-				this.body.velocity.y = 40;
-				this.body.velocity.x = 40;
-				this.animations.play("rightDown");
-				this.lastDirection = "rightDown";
-			}else if(this.x - playerX >= 24) {
-				this.body.velocity.y = 40;
-				this.body.velocity.x = -40;
-				this.animations.play("leftDown");
-				this.lastDirection = "leftDown";
-			}else{
-				this.body.velocity.y = 80;
-				this.animations.play("down");
-				this.lastDirection = "down";
-			}
-			//this.setActiveWeaponFrame();
-		}else if((playerX < this.x) && (horizontalDifference > verticalDifference)){
-			this.body.velocity.x = -80;
-			this.animations.play("left");
-			this.lastDirection = "left";
+	this.body.velocity.x = velocity.x*80;
+	this.body.velocity.y = velocity.y*80;
+	
+	var walkUp = this.body.velocity.y < 0.5;
+	var walkDown = this.body.velocity.y > 0.5;
+	var walkRight = this.body.velocity.x > 0.5;
+	var walkLeft = this.body.velocity.x < 0.5;
+	
+	var walkDiagonally = this.body.velocity.x > 0 && this.body.velocity.y > 0;
+	
+
+	
+	if(!walkDiagonally){
+		if(walkLeft){
+			this.runAnimation("left");
 			this.setActiveWeaponFrame();
-		}else if((playerX > this.x) && (horizontalDifference > verticalDifference)){
-			this.body.velocity.x = 80;
-			this.animations.play("right");
-			this.lastDirection = "right";
+		}else if(walkRight){
+			this.runAnimation("right");
 			this.setActiveWeaponFrame();
+		}else if(walkUp){
+			this.runAnimation("up");
+		}else if(walkDown){
+			this.runAnimation("down")
+		}	
+	}else{
+		if(walkUp && walkRight){
+			this.runAnimation("rightUp");
+		}else if(walkDown && walkRight){
+			this.runAnimation("rightDown");
+		}else if(walkUp && walkLeft){
+			this.runAnimation("leftUp");
+		}else if(walkDown && walkLeft){
+			this.runAnimation("leftDown");
 		}
 	}
 };
 
-Enemy.prototype.faceDirection = function(playerX, playerY){
-	
+Enemy.prototype.runAnimation = function(animationName){
+	if(!this.isPlaying){
+		//console.log(this.id);
+		//console.log(animationName);
+
+		
+		if(this.timeSinceDirectionChange === 0){
+			this.animations.play(animationName);
+			this.lastDirection = animationName;	
+		}else{
+			this.animations.play(this.lastDirection);
+		}
+		
+		if(this.timeSinceDirectionChange === 10){
+			this.timeSinceDirectionChange = 0;
+		}else{
+			this.timeSinceDirectionChange++;
+		}
+	}
 };
+
+Enemy.prototype.calculatePath = function(layer, pathfinder, player){
+	var self = this;
+	
+    pathfinder.setCallbackFunction(function(path) {
+        path = path || [];
+        
+        self.path = path;
+
+        self.timeSincePathCalc = 1;
+        //console.log("Path calculated, ", path);
+        //self.currentPathMilestone = undefined;
+    });
+    
+    pathfinder.preparePathCalculation([layer.getTileX(this.x), layer.getTileY(this.y)], [layer.getTileX(player.x),  layer.getTileX(player.y)]);
+	pathfinder.calculatePath();
+};
+
+
 		
 Enemy.prototype.takeActions = function(levelObjects){
 	var reachOpponent = false;
 	
-	if(this.checkSpotPlayer(levelObjects.player.x, levelObjects.player.y)){
-	    levelObjects.pathfinder.setCallbackFunction(function(path) {
-	    	console.log(path);
-	        path = path || [];
-	        
-	        console.log("PATH: ", path);
-	      
-	    });
-	    
-	    console.log(this.x);
-	    console.log(this.y);
-		
-	    levelObjects.pathfinder.preparePathCalculation([levelObjects.layer.getTileX(this.x), levelObjects.layer.getTileY(this.y)], [levelObjects.layer.getTileX(levelObjects.player.x),  levelObjects.layer.getTileX(levelObjects.player.y)]);
-		levelObjects.pathfinder.calculatePath();
-		
-		//this.makeMovement(levelObjects.player.x, levelObjects.player.y);	
+	if(this.timeSincePathCalc === ENEMY_PATHCALCULATION_SPEED){
+		this.timeSincePathCalc = 0;
+	}
+	
+	if(this.timeSincePathCalc > 0){
+		this.timeSincePathCalc ++;
 	}
 	
 	for(var i = 0; i < levelObjects.opponents.length; i++){
@@ -170,6 +181,50 @@ Enemy.prototype.takeActions = function(levelObjects){
 		reachOpponent = this.checkReach(opponent);
 	}
 	
+	if(!reachOpponent){
+		if(this.checkSpotPlayer(levelObjects.player.x, levelObjects.player.y)){
+			var distanceReset = false;
+			var pathFinished =  this.path !== undefined && this.pathStepsFinished === this.path.length
+			
+			if(this.timeSincePathCalc === 0 || (this.timeSincePathCalc && pathFinished)){
+				 this.calculatePath(levelObjects.layer, levelObjects.pathfinder, new Phaser.Point(levelObjects.player.x, levelObjects.player.y));
+				 distanceReset = true;
+				 this.pathStepsFinished = 0;
+			}
+		   
+		    if(this.path !== undefined && this.path.length > 0){
+		    	//console.log(this.currentPathMilestone);
+		    	
+		    	if(this.currentPathMilestone === undefined){
+		    		//console.log("INIT milestone enemy ", this.id);
+		    		this.currentPathMilestone = this.path[0];
+		    	}
+				
+		    	if(this.currentPathMilestone !== undefined){
+		    		var distance = Phaser.Point.distance({x: this.position.x/SPRITE_SIZE, y: this.position.y/SPRITE_SIZE}, this.currentPathMilestone);
+		    		if(distance < 1 || distanceReset){
+			    		//console.log("NY milestone enemy " + this.id + ": ");
+			    		//console.log(this.currentPathMilestone);
+			 
+			    		if(this.pathStepsFinished !== this.path.length){
+				    		this.currentPathMilestone = this.path[this.pathStepsFinished];
+				    		this.pathStepsFinished ++;
+			    		}
+	
+			    		distanceReset = false;
+			    	}
+	
+		    		velocity = new Phaser.Point(this.currentPathMilestone.x - (this.position.x/SPRITE_SIZE), this.currentPathMilestone.y - (this.position.y/SPRITE_SIZE));
+		    		velocity.normalize();
+		    		
+		    		this.makeMovement(velocity, levelObjects.player);	
+		    	}
+		    
+		    }
+		}	
+	}
+	
+
 	if(reachOpponent){
 		if(this.game.time.now - this.timeAttacked > (this.getAttackSpeed() + (ENEMY_DIFFICULTY_DIVIDER / this.level)) + this.tempCooldownTime){
 			var attackWarning = this.game.add.text(this.x + (this.hitCount * 5), this.y - (this.hitCount * 5), "!", {
@@ -184,10 +239,10 @@ Enemy.prototype.takeActions = function(levelObjects){
 			});
 
 			if(this.game.time.now - this.timeAttacked > (((this.getAttackSpeed() + (ENEMY_DIFFICULTY_DIVIDER / this.level)) + this.tempCooldownTime) + 500)){
-				this.playCombatAnimations();
+				this.playCombatAnimations(levelObjects.player);
 				
 				this.timeAttacked = this.game.time.now;
-				console.log("enemy " + this.id + " strikes player!");
+				//console.log("enemy " + this.id + " strikes player!");
 				opponent.takeDamage(this, "primary");
 		
 				this.tempCooldownTime = 0;
@@ -200,11 +255,29 @@ Enemy.prototype.takeActions = function(levelObjects){
 
 Enemy.prototype.setActiveWeaponFrame = function(){
 	if(this.equipped.rightHand !== undefined){
-		console.log(this.getActiveEquipmentFrameNumber());
 		this.equipped.rightHand.frame = this.getActiveEquipmentFrameNumber();
 	}
 	
 	if(this.equipped.leftHand !== undefined){
 		this.equipped.leftHand.frame = this.getActiveEquipmentFrameNumber();
+	}
+};
+
+Enemy.prototype.playCombatAnimations = function(target){
+	//TODO: Target behövs
+	var direction = this.getTargetDirection(target);
+	this.animations.play(direction, 5, false);
+	this.lastDirection = direction;
+	this.setActiveWeaponFrame();
+	//TODO: Den här kan inte köras för alla i nuläget
+	if(direction === "down" || direction === "left" || direction === "right" ){
+		console.log("HALLÅ!");
+		if(this.equipped.rightHand != undefined){
+			this.equipped.rightHand.animations.play(direction, 5, false);
+			
+			if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
+				this.equipped.leftHand.animations.play(direction, 5, false);
+			}
+		}	
 	}
 };

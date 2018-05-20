@@ -49,7 +49,7 @@ Level.prototype = {
 		for(var i = 0; i < 17; i++){
 			grid[i] = [];
 			for(var j = 0; j < 16; j++){
-				grid[i].push(counter);
+				grid[i].push({index: counter});
 				
 				//TODO: Kolla alla lager
 				//console.log(this.blockLayer.layer.data[i][j].index === -1);
@@ -65,9 +65,8 @@ Level.prototype = {
 		
 		console.log("grid", grid);
 		console.log("walkables", walkables);
-		
+
 		this.pathfinder.setGrid(grid, walkables);
-	
 
 	    this.map.setCollisionBetween(1, 3000, true, 'blockLayer');
 	    this.map.setCollisionBetween(1, 3000, true, 'lowerTreeLayer');
@@ -104,12 +103,20 @@ Level.prototype = {
 		
 		this.game.physics.arcade.collide(this.enemies, this.blockLayer);
 		this.game.physics.arcade.collide(this.enemies, this.lowerTreeLayer);
-		this.enemies.setAll('body.immovable', true);
+		
 		this.npcs.setAll('body.immovable', true);
+		this.player.body.immovable = true;
+		this.enemies.setAll('body.immovable', true);
+		this.player.body.immovable = false;
 		this.game.physics.arcade.collide(this.player, this.enemies, this.collisionHandlerPlayerAndEnemy, null, this);
-		this.game.physics.arcade.collide(this.player, this.npcs, this.collisionHandlerPlayerAndNPC, null, this);
 		this.enemies.setAll('body.immovable', false);
+		this.player.body.immovable = true;
+		this.game.physics.arcade.collide(this.enemies, this.player, this.collisionHandlerPlayerAndEnemy, null, this);
+		this.game.physics.arcade.collide(this.player, this.npcs, this.collisionHandlerPlayerAndNPC, null, this);
+		
+
 		this.game.physics.arcade.collide(this.enemies, this.enemies, this.collisionHandlerEnemyAndEnemy);
+
 
 		if(this.player !== null){
 			this.player.body.velocity.y = 0;
@@ -179,8 +186,44 @@ Level.prototype = {
 	},
 	
 	collisionHandlerEnemyAndEnemy: function(enemy1, enemy2){
-
+		enemy1.body.velocity.x = 0;
+		enemy1.body.velocity.y = 0;
+		enemy2.body.velocity.x = 0;
+		enemy2.body.velocity.y = 0;
+		
+		console.log(enemy1.game.state);
+		
+		//enemy1.game.state.states.level.avoid(enemy1, enemy2);
+		//enemy2.game.state.states.level.avoid(enemy2, enemy1);
 	},
+	
+	
+	avoid: function(avoid, avoider){
+		var x = 0;
+		var y = 0;
+		
+		
+		if(avoid.y > avoider.y){
+    		y = 5;
+		}else if(avoid.y < avoider.y){
+			y = -5;
+		}
+		
+
+		if(avoid.x > avoider.x){
+			x = 5;
+		}else if(avoid.x < avoider.x){
+			x = -5;
+		}
+		
+		velocity = new Phaser.Point(avoider.x + x, avoider.y + y);
+		velocity.normalize();
+		
+		console.log(velocity);
+		
+		avoider.makeMovement(velocity);
+	},
+	
 
 	pickupItem: function(character,item){
 		character.inventory.push(item.key);

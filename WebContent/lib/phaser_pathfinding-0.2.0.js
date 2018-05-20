@@ -358,21 +358,19 @@ EasyStar.js = function() {
 		if (startX===endX && startY===endY) {
 			callback([]);
 		}
-
+		 
 		//End point is not an acceptable tile.
 		var endTile = collisionGrid[endY][endX];
 		var isAcceptable = false;
-		console.log(acceptableTiles);
+		
 		for (var i = 0; i < acceptableTiles.length; i++) {
 			if (endTile === acceptableTiles[i]) {
-				console.log("acceptabel");
 				isAcceptable = true;
 				break;
 			}
 		}
 
 		if (isAcceptable === false) {
-			console.log("hej");
 			callback(null);
 			return;
 		}
@@ -600,6 +598,7 @@ Phaser.Plugin.PathFinderPlugin.prototype.setGrid = function (grid, walkables, it
     for (var i = 0; i < grid.length; i++)
     {
         this._grid[i] = [];
+        
         for (var j = 0; j < grid[i].length; j++)
         {
             if (grid[i][j])
