@@ -70,11 +70,70 @@ Enemy = function(game, x, y, type){
 			this.enemyAttacked.takeDamage(this, "primary");
 		}
 	}, this);
+	
 };
 
 Enemy.prototype = Object.create(Character.prototype);
 
 Enemy.prototype.constructor = Enemy;
+
+Enemy.prototype.takeActions = function(levelObjects){
+	this.drawReachCircle();
+	
+	var reachOpponent = false;
+	
+	if(this.timeSincePathCalc === ENEMY_PATHCALCULATION_SPEED){
+		this.timeSincePathCalc = 0;
+	}
+	
+	if(this.timeSincePathCalc > 0){
+		this.timeSincePathCalc ++;
+	}
+	
+
+	for(var i = 0; i < levelObjects.opponents.length; i++){
+		var opponent = levelObjects.opponents[i];
+
+		reachOpponent = this.checkReach(opponent);
+	}
+
+
+	if(reachOpponent){
+		this.body.velocity.x = 0;
+		this.body.velocity.y = 0;
+		this.resetPath();
+		
+		if(this.game.time.now - this.timeAttacked > (this.getAttackSpeed() + (ENEMY_DIFFICULTY_DIVIDER / this.level)) + this.tempCooldownTime){
+			var attackWarning = this.game.add.text(this.x + (this.hitCount * 5), this.y - (this.hitCount * 5), "!", {
+				font: "18px Arial",
+				fill: "#66ffff",
+			});
+		    
+			this.blockChanceTimeGap = this.game.add.tween(attackWarning).to({alpha: 0}, 500, null, true);
+	
+			this.blockChanceTimeGap.onComplete.add(function(){
+				attackWarning.destroy();
+			});
+
+			if(this.game.time.now - this.timeAttacked > (((this.getAttackSpeed() + (ENEMY_DIFFICULTY_DIVIDER / this.level)) + this.tempCooldownTime) + 500)){
+				this.playCombatAnimations(levelObjects.player);
+				
+				this.timeAttacked = this.game.time.now;
+				//console.log("enemy " + this.id + " strikes player!");
+				opponent.takeDamage(this, "primary");
+		
+				this.tempCooldownTime = 0;
+			
+				return "attackedPlayer";
+			}	
+		}
+	}else{
+		//console.log("enemy" + this.id + " do not reach");
+		if(this.checkSpotPlayer(levelObjects.player.x, levelObjects.player.y)){
+			this.moveTo(levelObjects.player.x, levelObjects.player.y, levelObjects.layer, levelObjects.pathfinder);
+		}
+	}
+};
 
 Enemy.prototype.checkSpotPlayer = function(playerX, playerY){
 	if(
@@ -85,7 +144,7 @@ Enemy.prototype.checkSpotPlayer = function(playerX, playerY){
 	}
 };
 		
-Enemy.prototype.makeMovement = function(velocity, target){
+Enemy.prototype.makeMovement = function(velocity){
 
 	this.body.velocity.x = velocity.x*80;
 	this.body.velocity.y = velocity.y*80;
@@ -96,8 +155,6 @@ Enemy.prototype.makeMovement = function(velocity, target){
 	var walkLeft = this.body.velocity.x < 0.5;
 	
 	var walkDiagonally = this.body.velocity.x > 0 && this.body.velocity.y > 0;
-	
-
 	
 	if(!walkDiagonally){
 		if(walkLeft){
@@ -162,96 +219,55 @@ Enemy.prototype.calculatePath = function(layer, pathfinder, player){
 	pathfinder.calculatePath();
 };
 
-
+Enemy.prototype.moveTo = function(goalX, goalY, layer, pathfinder){
+	var distanceReset = false;
+	var pathFinished =  this.path !== undefined && this.pathStepsFinished === this.path.length;
+	
+	if(this.timeSincePathCalc === 0 || (this.timeSincePathCalc && pathFinished)){
+		 this.calculatePath(layer, pathfinder, new Phaser.Point(goalX, goalY));
+		 distanceReset = true;
+		 this.pathStepsFinished = 0;
+	}
+   
+    if(this.path !== undefined && this.path.length > 0){
+    	//console.log(this.currentPathMilestone);
+    	
+    	if(this.currentPathMilestone === undefined){
+    		//console.log("INIT milestone enemy ", this.id);
+    		this.currentPathMilestone = this.path[0];
+    	}
 		
-Enemy.prototype.takeActions = function(levelObjects){
-	var reachOpponent = false;
-	
-	if(this.timeSincePathCalc === ENEMY_PATHCALCULATION_SPEED){
-		this.timeSincePathCalc = 0;
-	}
-	
-	if(this.timeSincePathCalc > 0){
-		this.timeSincePathCalc ++;
-	}
-	
-	for(var i = 0; i < levelObjects.opponents.length; i++){
-		var opponent = levelObjects.opponents[i];
+    	if(this.currentPathMilestone !== undefined){
+    		//console.log("movesTo: " + this.currentPathMilestone.x + " " + this.currentPathMilestone.y);
+    		var distance = Phaser.Point.distance({x: this.position.x/SPRITE_SIZE, y: this.position.y/SPRITE_SIZE}, this.currentPathMilestone);
+    		//console.log(distance);
+    		if(distance < 1 || distanceReset){
+	    		//console.log("NY milestone enemy " + this.id + ": ");
+	    		//console.log(this.currentPathMilestone);
+	 
+	    		if(this.pathStepsFinished !== this.path.length){
+		    		this.currentPathMilestone = this.path[this.pathStepsFinished];
+		    		this.pathStepsFinished ++;
+	    		}
 
-		reachOpponent = this.checkReach(opponent);
-	}
-	
-	if(!reachOpponent){
-		if(this.checkSpotPlayer(levelObjects.player.x, levelObjects.player.y)){
-			var distanceReset = false;
-			var pathFinished =  this.path !== undefined && this.pathStepsFinished === this.path.length
-			
-			if(this.timeSincePathCalc === 0 || (this.timeSincePathCalc && pathFinished)){
-				 this.calculatePath(levelObjects.layer, levelObjects.pathfinder, new Phaser.Point(levelObjects.player.x, levelObjects.player.y));
-				 distanceReset = true;
-				 this.pathStepsFinished = 0;
-			}
-		   
-		    if(this.path !== undefined && this.path.length > 0){
-		    	//console.log(this.currentPathMilestone);
-		    	
-		    	if(this.currentPathMilestone === undefined){
-		    		//console.log("INIT milestone enemy ", this.id);
-		    		this.currentPathMilestone = this.path[0];
-		    	}
-				
-		    	if(this.currentPathMilestone !== undefined){
-		    		var distance = Phaser.Point.distance({x: this.position.x/SPRITE_SIZE, y: this.position.y/SPRITE_SIZE}, this.currentPathMilestone);
-		    		if(distance < 1 || distanceReset){
-			    		//console.log("NY milestone enemy " + this.id + ": ");
-			    		//console.log(this.currentPathMilestone);
-			 
-			    		if(this.pathStepsFinished !== this.path.length){
-				    		this.currentPathMilestone = this.path[this.pathStepsFinished];
-				    		this.pathStepsFinished ++;
-			    		}
-	
-			    		distanceReset = false;
-			    	}
-	
-		    		velocity = new Phaser.Point(this.currentPathMilestone.x - (this.position.x/SPRITE_SIZE), this.currentPathMilestone.y - (this.position.y/SPRITE_SIZE));
-		    		velocity.normalize();
-		    		
-		    		this.makeMovement(velocity, levelObjects.player);	
-		    	}
-		    
-		    }
-		}	
-	}
-	
-
-	if(reachOpponent){
-		if(this.game.time.now - this.timeAttacked > (this.getAttackSpeed() + (ENEMY_DIFFICULTY_DIVIDER / this.level)) + this.tempCooldownTime){
-			var attackWarning = this.game.add.text(this.x + (this.hitCount * 5), this.y - (this.hitCount * 5), "!", {
-				font: "18px Arial",
-				fill: "#66ffff",
-			});
-		    
-			this.blockChanceTimeGap = this.game.add.tween(attackWarning).to({alpha: 0}, 500, null, true);
-	
-			this.blockChanceTimeGap.onComplete.add(function(){
-				attackWarning.destroy();
-			});
-
-			if(this.game.time.now - this.timeAttacked > (((this.getAttackSpeed() + (ENEMY_DIFFICULTY_DIVIDER / this.level)) + this.tempCooldownTime) + 500)){
-				this.playCombatAnimations(levelObjects.player);
-				
-				this.timeAttacked = this.game.time.now;
-				//console.log("enemy " + this.id + " strikes player!");
-				opponent.takeDamage(this, "primary");
-		
-				this.tempCooldownTime = 0;
-			
-				return "attackedPlayer";
-			}	
-		}
-	}
+	    		distanceReset = false;
+	    	}else{
+	    		velocity = new Phaser.Point(this.currentPathMilestone.x - (this.position.x/SPRITE_SIZE), this.currentPathMilestone.y - (this.position.y/SPRITE_SIZE));
+	    		velocity.normalize();
+	    		
+	    		this.makeMovement(velocity);
+	    	}
+    	}
+    
+    }
 };
+
+Enemy.prototype.resetPath = function(){
+	this.timeSincePathCalc = 0;
+	this.path = undefined;
+	this.pathStepsFinished = 0;
+};
+
 
 Enemy.prototype.setActiveWeaponFrame = function(){
 	if(this.equipped.rightHand !== undefined){
@@ -263,21 +279,3 @@ Enemy.prototype.setActiveWeaponFrame = function(){
 	}
 };
 
-Enemy.prototype.playCombatAnimations = function(target){
-	//TODO: Target behövs
-	var direction = this.getTargetDirection(target);
-	this.animations.play(direction, 5, false);
-	this.lastDirection = direction;
-	this.setActiveWeaponFrame();
-	//TODO: Den här kan inte köras för alla i nuläget
-	if(direction === "down" || direction === "left" || direction === "right" ){
-		console.log("HALLÅ!");
-		if(this.equipped.rightHand != undefined){
-			this.equipped.rightHand.animations.play(direction, 5, false);
-			
-			if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
-				this.equipped.leftHand.animations.play(direction, 5, false);
-			}
-		}	
-	}
-};

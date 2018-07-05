@@ -114,15 +114,10 @@ Level.prototype = {
 		this.game.physics.arcade.collide(this.enemies, this.player, this.collisionHandlerPlayerAndEnemy, null, this);
 		this.game.physics.arcade.collide(this.player, this.npcs, this.collisionHandlerPlayerAndNPC, null, this);
 		
-
-		this.game.physics.arcade.collide(this.enemies, this.enemies, this.collisionHandlerEnemyAndEnemy);
-
-
 		if(this.player !== null){
 			this.player.body.velocity.y = 0;
 			this.player.body.velocity.x = 0;
 		}
-
 
 		this.player.readInput(this.enemies);
 		
@@ -186,42 +181,30 @@ Level.prototype = {
 	},
 	
 	collisionHandlerEnemyAndEnemy: function(enemy1, enemy2){
-		enemy1.body.velocity.x = 0;
-		enemy1.body.velocity.y = 0;
-		enemy2.body.velocity.x = 0;
-		enemy2.body.velocity.y = 0;
-		
-		console.log(enemy1.game.state);
-		
+		//enemy1.game.state.states.level.avoid(enemy2, enemy1);
 		//enemy1.game.state.states.level.avoid(enemy1, enemy2);
-		//enemy2.game.state.states.level.avoid(enemy2, enemy1);
+
 	},
 	
 	
 	avoid: function(avoid, avoider){
+		console.log("höpp");
 		var x = 0;
 		var y = 0;
 		
+		if(avoid.x > avoider.x){
+			x = -96;
+		}else{
+			x = 96;
+		}
 		
 		if(avoid.y > avoider.y){
-    		y = 5;
-		}else if(avoid.y < avoider.y){
-			y = -5;
+			y = -96;
+		}else{
+			y = +96;
 		}
 		
-
-		if(avoid.x > avoider.x){
-			x = 5;
-		}else if(avoid.x < avoider.x){
-			x = -5;
-		}
-		
-		velocity = new Phaser.Point(avoider.x + x, avoider.y + y);
-		velocity.normalize();
-		
-		console.log(velocity);
-		
-		avoider.makeMovement(velocity);
+		avoider.moveTo(avoider.x + x, avoider.y + y, this.backgroundLayer, this.pathfinder);
 	},
 	
 

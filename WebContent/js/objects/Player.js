@@ -36,12 +36,6 @@ Player = function(game, x, y){
 	this.animations.add('down', [15, 16, 17], 5);
 	this.animations.add('hitDown', [15, 18, 19], 5, true);
 
-	this.reachCircle = this.game.add.graphics();
-	this.reachCircle.beginFill(0x000000, 1);
-	this.reachCircle.drawCircle(this.x + (SPRITE_SIZE/2), this.y + (SPRITE_SIZE/2), this.reach * SPRITE_SIZE);
-	this.reachCircle.alpha = 0.2;
-	this.reachCircle.endFill();
-	
 	this.equipped = new Equipped(this.game, 0, 0);
 	this.equipped.inputEnabled = true;
 	this.equipped.input.enableDrag();
@@ -100,6 +94,8 @@ Player = function(game, x, y){
 	
 	this.dmgTextColour = "#ff0000";
 	
+	this.blockingTime = 0;
+	
 	//Init
 	var startingWeapon = new Weapon(this.game, 0, 0, 'sword');
 	startingWeapon.id = 1;
@@ -127,11 +123,7 @@ Player.prototype = Object.create(Character.prototype);
 Player.prototype.constructor = Player;
 
 Player.prototype.checkActions = function(levelObjects){
-	this.reachCircle.clear();
-	this.reachCircle.beginFill(0x000000, 1);
-	this.reachCircle.drawCircle(this.x + (SPRITE_SIZE/2), this.y + (SPRITE_SIZE/2), this.reach * SPRITE_SIZE);
-	this.reachCircle.alpha = 0.2;
-	this.reachCircle.endFill();
+	this.drawReachCircle();
 	
 	if(this.groupCombatEnabled){
 		//TODO: Kolla istället så att inte tiden för groupcobat har gått ut.
@@ -151,29 +143,55 @@ Player.prototype.checkActions = function(levelObjects){
 	
 	if(this.game.input.activePointer.leftButton.isDown && !this.groupCombatEnabled){
 		this.engageSingleCombat(levelObjects.enemies);
-	}else if(this.game.input.activePointer.rightButton.isDown){
-		for(var i = 0; i < levelObjects.enemies.length; i++){
-			var enemy = levelObjects.enemies[i];
-	
-			if(this.checkHitEnemy(enemy, this.game.input.activePointer.x + this.game.camera.x, this.game.input.activePointer.y + this.game.camera.y)){
-				if(enemy.blockChanceTimeGap.isRunning){
+	}else if(this.game.input.activePointer.rightButton.isDown && this.game.time.now - this.timeBlocked > (this.getBlockSpeed())){
+		if(this.blockingTime === 0){
+			this.blockingTime = 1;
+		}
+		
+		if(this.blockingTime > 0 && this.blockingTime <= 100){
+			console.log("Blocking time: ", this.blockingTime);
+			for(var i = 0; i < levelObjects.enemies.length; i++){
+				var enemy = levelObjects.enemies[i];
+				if(enemy.blockChanceTimeGap !== undefined && enemy.blockChanceTimeGap.isRunning){
 					this.parryEnemy(enemy);
 				}
+				/*
+				if(this.checkHitEnemy(enemy, this.game.input.activePointer.x + this.game.camera.x, this.game.input.activePointer.y + this.game.camera.y)){
+					if(enemy.blockChanceTimeGap.isRunning){
+						this.parryEnemy(enemy);
+					}
+				}*/
 			}
+			this.blockingTime++;
+		}else if(this.blockingTime > 100){
+			console.log("Block slut!");
+			this.timeBlocked = this.game.time.now;
+			
+			if(this.equipped.rightHand.twoHanded){
+				this.timeAttacked = this.game.time.now;
+			}
+			
+		}
+		
+	}else{
+		if(this.blockingTime > 0){
+			this.blockingTime = 0;
 		}
 	}
 };
 		
 Player.prototype.engageSingleCombat = function(enemies){
 	if(this.game.time.now - this.timeAttacked > this.getAttackSpeed()){
-		this.playCombatAnimations();
 		
 		for(var i = 0; i < enemies.length; i++){
 			var enemy = enemies[i];
 			
 			if(this.checkHitEnemy(enemy, this.game.input.activePointer.x +  this.game.camera.x, this.game.input.activePointer.y + this.game.camera.y)){
 				this.enemiesAttacked.push(enemy);
+				this.playCombatAnimations(enemy);
 			}
+			
+			this.playCombatAnimations();
 		}
 		
 		this.timeAttacked = this.game.time.now;
@@ -225,11 +243,11 @@ Player.prototype.engageGroupCombat = function(enemies){
 		console.log(this.setActiveWeaponFrame());
 	}
 };
-		
-Player.prototype.parryEnemy = function(nextAttacker){
+
+Player.prototype.playParryAnimations = function(target){
 	/*Räknar ut vilken animation som ska köras*/
-	var xDifference = nextAttacker.x - this.x;
-	var yDifference = nextAttacker.y - this.y;
+	var xDifference = target.x - this.x;
+	var yDifference = target.y - this.y;
 	
 	var xNormDifference = xDifference < 0 ? 0 - xDifference : xDifference;
 	var yNormDifference = yDifference < 0 ? 0 - yDifference : yDifference;
@@ -237,27 +255,30 @@ Player.prototype.parryEnemy = function(nextAttacker){
 	//console.log("xNormDifference: " + xNormDifference);
 	//console.log("yNormDifference: " + yNormDifference);
 
-	if(this.game.time.now - this.timeBlocked > (this.getBlockSpeed()) ){
-		if(xNormDifference > yNormDifference){
-			if(xDifference > 0){
-				this.animations.play("idleRight", 5, false);
-				this.lastDirection = "right";
-			}else{
-				this.animations.play("idleLeft", 5, false);
-				this.lastDirection = "left";
-			}
-		}else if(yNormDifference > xNormDifference){
-			if(yDifference > 0){
-				this.animations.play("idleDown", 5, false);
-				this.lastDirection = "down";
-			}else{
-				this.animations.play("idleUp", 5, false);
-				this.lastDirection = "up";
-			}
+	
+	if(xNormDifference > yNormDifference){
+		if(xDifference > 0){
+			this.animations.play("idleRight", 5, false);
+			this.lastDirection = "right";
+		}else{
+			this.animations.play("idleLeft", 5, false);
+			this.lastDirection = "left";
 		}
+	}else if(yNormDifference > xNormDifference){
+		if(yDifference > 0){
+			this.animations.play("idleDown", 5, false);
+			this.lastDirection = "down";
+		}else{
+			this.animations.play("idleUp", 5, false);
+			this.lastDirection = "up";
+		}
+	}
+	
+	this.setActiveWeaponFrame();
+};
 		
-		this.setActiveWeaponFrame();
-		
+Player.prototype.parryEnemy = function(nextAttacker){
+	if(this.game.time.now - this.timeBlocked > (this.getBlockSpeed())){
 		var parryResult = "failed";
 		
 		var parryValue = 0;
@@ -315,8 +336,12 @@ Player.prototype.parryEnemy = function(nextAttacker){
 				break;
 		}
 		
+		this.playParryAnimations(nextAttacker);
+		
 		this.timeBlocked = this.game.time.now;
+		
 		console.log(this.equipped);
+		
 		if(this.equipped.rightHand.twoHanded){
 			this.timeAttacked = this.game.time.now;
 		}
@@ -367,50 +392,6 @@ Player.prototype.setActiveWeaponFrame = function(){
 	
 	if(this.equipped.leftHand !== undefined){
 		this.equipped.leftHand.frame = this.getActiveEquipmentFrameNumber();
-	}
-};
-
-Player.prototype.playCombatAnimations = function(){
-	if(this.lastDirection === "down"){
-		this.animations.play("hitDown", 5, false);
-		
-		if(this.equipped.rightHand != undefined){
-			this.equipped.rightHand.animations.play("down", 5, false);
-			
-			if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
-				this.equipped.leftHand.animations.play("down", 5, false);
-			}
-		}	
-	}else if(this.lastDirection === "left"){
-		this.animations.play("hitLeft", 5, false);
-		
-		if(this.equipped.rightHand !== undefined){
-			this.equipped.rightHand.animations.play("left", 5, false);
-			
-			if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
-				this.equipped.leftHand.animations.play("left", 5, false);
-			}
-		}
-	}else if(this.lastDirection === "right"){
-		this.animations.play("hitRight", 5, false);
-		
-		if(this.equipped.rightHand !== undefined){
-			this.equipped.rightHand.animations.play("right", 5, false);
-			
-			if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== undefined){
-				this.equipped.leftHand.animations.play("right", 5, false);
-			}
-		}
-	}else if(this.lastDirection === "up"){
-		//TODO: Add up-animation
-	}else if(this.lastDirection === "rightDown"){
-		this.animations.play("hitRightDown");
-	}else if(this.lastDirection === "leftDown"){
-		this.animations.play("hitLeftDown");
-	}else if(this.lastDirection === "rightUp"){
-		this.animations.play("hitRightUp");
-	}else if(this.lastDirection === "leftUp"){
-		this.animations.play("hitLeftUp");
 	}
 };
 

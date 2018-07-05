@@ -39,6 +39,8 @@ Character = function(game, x, y, type){
 	this.equipped = {
 			
 	};
+	
+	this.reachCircle = this.game.add.graphics();
 
 	/*Presentation*/
 	this.dmgTextColour = "#00ff66";
@@ -82,6 +84,27 @@ Character.prototype.reachDown = function(target){
 	return this.y <= target.y && totalReachDown >= target.y;
 };
 
+Character.prototype.checkReach = function(opponent){
+	if(this.reachRight(opponent) && this.reachUp(opponent)){
+		return true;
+	}
+	
+	if(this.reachRight(opponent) && this.reachDown(opponent)){
+		return true;
+	}
+	
+	
+	if(this.reachLeft(opponent) && this.reachUp(opponent)){
+		return true;
+	}
+	
+	if(this.reachLeft(opponent) && this.reachDown(opponent)){
+		return true;
+	}
+	
+	return false;
+};
+
 Character.prototype.countStats = function(){
 	for (var property in this.equipped) {
 		if(property === 'rightHand' || property === 'leftHand'){
@@ -108,14 +131,6 @@ Character.prototype.countStats = function(){
 		}
 
 	}
-};
-	
-Character.prototype.checkReach = function(opponent){
-	if((this.reachRight(opponent) || this.reachLeft(opponent))  && (this.reachUp(opponent) || this.reachDown(opponent))){
-		return true;
-	}
-	
-	return false;
 };
 		
 Character.prototype.getBlocked = function(attacker, blockType){
@@ -160,7 +175,7 @@ Character.prototype.takeDamage = function(attacker, attackType){
 	if(damageTaken >= 0 && this.game !== null){
 		this.health -= damageTaken;
 		
-		console.log(this.name + " " + this.id + ": " + this.health);
+		//console.log(this.name + " " + this.id + ": " + this.health);
 		
 	    var dmgText = this.game.add.text(this.x+(this.hitCount*5), this.y-(this.hitCount*5), "-"+damageTaken, {
 			font: "16px Arial",
@@ -256,5 +271,78 @@ Character.prototype.getTargetDirection = function(target){
 		return "left";
 	}else if((target.x > this.x) && (horizontalDifference > verticalDifference)){
 		return "right";
+	}
+};
+
+Character.prototype.drawReachCircle = function(){
+	if(this.reachCircle !== undefined){
+		this.reachCircle.clear();
+	}
+
+	this.reachCircle.beginFill(0x000000, 1);
+	this.reachCircle.drawCircle(this.x + (SPRITE_SIZE/2), this.y + (SPRITE_SIZE/2), this.reach * SPRITE_SIZE);
+	this.reachCircle.alpha = 0.2;
+	this.reachCircle.endFill();
+};
+
+Character.prototype.playCombatAnimations = function(target){
+	if(target !== undefined){
+		//TODO: Target behövs
+		var direction = this.getTargetDirection(target);
+		this.animations.play(direction, 5, false);
+		this.lastDirection = direction;
+		this.setActiveWeaponFrame();
+		//TODO: Den här kan inte köras för alla i nuläget
+		if(direction === "down" || direction === "left" || direction === "right" ){
+			if(this.equipped.rightHand != undefined){
+				this.equipped.rightHand.animations.play(direction, 5, false);
+				
+				if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
+					this.equipped.leftHand.animations.play(direction, 5, false);
+				}
+			}	
+		}
+	}else{
+		if(this.lastDirection === "down"){
+			this.animations.play("hitDown", 5, false);
+			
+			if(this.equipped.rightHand != undefined){
+				this.equipped.rightHand.animations.play("down", 5, false);
+				
+				if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
+					this.equipped.leftHand.animations.play("down", 5, false);
+				}
+			}	
+		}else if(this.lastDirection === "left"){
+			this.animations.play("hitLeft", 5, false);
+			
+			if(this.equipped.rightHand !== undefined){
+				this.equipped.rightHand.animations.play("left", 5, false);
+				
+				if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== 'undefined'){
+					this.equipped.leftHand.animations.play("left", 5, false);
+				}
+			}
+		}else if(this.lastDirection === "right"){
+			this.animations.play("hitRight", 5, false);
+			
+			if(this.equipped.rightHand !== undefined){
+				this.equipped.rightHand.animations.play("right", 5, false);
+				
+				if(!this.equipped.rightHand.twoHanded && this.equipped.lefHand !== undefined){
+					this.equipped.leftHand.animations.play("right", 5, false);
+				}
+			}
+		}else if(this.lastDirection === "up"){
+			//TODO: Add up-animation
+		}else if(this.lastDirection === "rightDown"){
+			this.animations.play("hitRightDown");
+		}else if(this.lastDirection === "leftDown"){
+			this.animations.play("hitLeftDown");
+		}else if(this.lastDirection === "rightUp"){
+			this.animations.play("hitRightUp");
+		}else if(this.lastDirection === "leftUp"){
+			this.animations.play("hitLeftUp");
+		}
 	}
 };
