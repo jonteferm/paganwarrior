@@ -16,7 +16,7 @@ Player = function(game, x, y){
 	this.hit = 1;
 	this.protection = 1;
 	this.block = 1.2;
-	this.reach = 2;
+	this.reach = 1;
 	/*---------*/
 	
 	this.groupCombatEnabled = false;

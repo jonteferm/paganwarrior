@@ -65,22 +65,22 @@ Character.prototype.getBlockSpeed = function(){
 };
 
 Character.prototype.reachRight = function(target){
-	var totalReachRight = (this.x + SPRITE_SIZE) + this.reach * SPRITE_SIZE;
+	var totalReachRight = (this.x + SPRITE_SIZE) * this.reach;
 	return this.x <= target.x && totalReachRight >= target.x;
 };
 
 Character.prototype.reachLeft = function(target){
-	var totalReachLeft = this.x - this.reach * SPRITE_SIZE;
+	var totalReachLeft = (this.x) * this.reach;
 	return this.x >= target.x && totalReachLeft <= target.x + SPRITE_SIZE;
 };
 
 Character.prototype.reachUp = function(target){
-	var totalReachUp = this.y - this.reach * SPRITE_SIZE;
+	var totalReachUp = (this.y) * this.reach;
 	return this.y >= target.y && totalReachUp <= target.y + SPRITE_SIZE;
 };
 
 Character.prototype.reachDown = function(target){
-	var totalReachDown = (this.y + 48) + this.reach * SPRITE_SIZE;
+	var totalReachDown = (this.y + SPRITE_SIZE) * this.reach;
 	return this.y <= target.y && totalReachDown >= target.y;
 };
 

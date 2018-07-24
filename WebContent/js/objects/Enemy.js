@@ -99,6 +99,7 @@ Enemy.prototype.takeActions = function(levelObjects){
 
 
 	if(reachOpponent){
+		console.log(reachOpponent);
 		this.body.velocity.x = 0;
 		this.body.velocity.y = 0;
 		this.resetPath();
@@ -130,7 +131,10 @@ Enemy.prototype.takeActions = function(levelObjects){
 	}else{
 		//console.log("enemy" + this.id + " do not reach");
 		if(this.checkSpotPlayer(levelObjects.player.x, levelObjects.player.y)){
-			this.moveTo(levelObjects.player.x, levelObjects.player.y, levelObjects.layer, levelObjects.pathfinder);
+			var goalX = levelObjects.player.x + (SPRITE_SIZE);
+			var goalY = levelObjects.player.y + (SPRITE_SIZE);
+
+			this.moveTo(goalX, goalY, levelObjects.layer, levelObjects.pathfinder);
 		}
 	}
 };
@@ -211,6 +215,7 @@ Enemy.prototype.calculatePath = function(layer, pathfinder, player){
         self.path = path;
 
         self.timeSincePathCalc = 1;
+        
         //console.log("Path calculated, ", path);
         //self.currentPathMilestone = undefined;
     });
@@ -222,6 +227,8 @@ Enemy.prototype.calculatePath = function(layer, pathfinder, player){
 Enemy.prototype.moveTo = function(goalX, goalY, layer, pathfinder){
 	var distanceReset = false;
 	var pathFinished =  this.path !== undefined && this.pathStepsFinished === this.path.length;
+	console.log(this.path);
+	console.log(this.pathStepsFinished);
 	
 	if(this.timeSincePathCalc === 0 || (this.timeSincePathCalc && pathFinished)){
 		 this.calculatePath(layer, pathfinder, new Phaser.Point(goalX, goalY));
@@ -240,6 +247,7 @@ Enemy.prototype.moveTo = function(goalX, goalY, layer, pathfinder){
     	if(this.currentPathMilestone !== undefined){
     		//console.log("movesTo: " + this.currentPathMilestone.x + " " + this.currentPathMilestone.y);
     		var distance = Phaser.Point.distance({x: this.position.x/SPRITE_SIZE, y: this.position.y/SPRITE_SIZE}, this.currentPathMilestone);
+    		
     		//console.log(distance);
     		if(distance < 1 || distanceReset){
 	    		//console.log("NY milestone enemy " + this.id + ": ");
