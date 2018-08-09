@@ -352,22 +352,22 @@ Player.prototype.readInput = function(enemies){
 	this.checkActions({enemies: enemies.children});
 
 	if(this.wasd.up.isDown){
-		this.body.velocity.y = -96;
+		this.body.velocity.y = -64;
 		this.animations.play("up");
 		this.lastDirection = "up";
 		this.setActiveWeaponFrame();
 	}else if(this.wasd.down.isDown){
-		this.body.velocity.y = 96;
+		this.body.velocity.y = 64;
 		this.animations.play("down");
 		this.lastDirection = "down";
 		this.setActiveWeaponFrame();
 	}else if(this.wasd.left.isDown){
-		this.body.velocity.x = -96;
+		this.body.velocity.x = -64;
 		this.animations.play("left");
 		this.lastDirection = "left";
 		this.setActiveWeaponFrame();
 	}else if(this.wasd.right.isDown){
-		this.body.velocity.x = 96;
+		this.body.velocity.x = 64;
 		this.animations.play("right");
 		this.lastDirection = "right";
 		this.setActiveWeaponFrame();

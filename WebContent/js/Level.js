@@ -17,25 +17,19 @@ Door.prototype = Object.create(Phaser.Sprite.prototype);
 Level.prototype = {
 	create: function(){
 		if(this.game.state.current === 'level'){
-			this.map = this.game.add.tilemap('oryxtiles2');
+			this.map = this.game.add.tilemap('fototiles');
 		}else if(this.game.state.current === 'level2'){
 			this.map = this.game.add.tilemap('oryxtiles3');
 		}
 
-		this.map.addTilesetImage('tiles', 'tiles');
-		//this.map.addTilesetImage('tilesLightForest', 'tilesLightForest');
-		//this.map.addTilesetImage('tilesAutumn', 'tilesAutumn');
-		//this.map.addTilesetImage('tree', 'tree');
-		this.map.addTilesetImage('trees', 'trees');
-		this.map.addTilesetImage('autumn48', 'autumn48');
-		this.map.addTilesetImage('wood48', 'wood48');
-		this.map.addTilesetImage('lightForest48', 'lightForest48');
+		this.map.addTilesetImage('Forest Floor', 'Forest Floor');
+		this.map.addTilesetImage('autumntrees', 'autumntrees');
 
-		this.backgroundLayer = this.map.createLayer('backgroundLayer', 768, 768);
-		this.blockLayer = this.map.createLayer('blockLayer', 768, 768 );
-		this.treeLayer = this.map.createLayer('treeLayer', 768, 768);
-		this.lowerTreeLayer = this.map.createLayer('lowerTreeLayer', 768, 768);
-		this.lesserObjectsLayer = this.map.createLayer('lesserObjectsLayer', 768, 768);
+		this.backgroundLayer = this.map.createLayer('backgroundLayer', 800, 600);
+		this.blockLayer = this.map.createLayer('blockLayer', 800, 600);
+		this.treeLayer = this.map.createLayer('treeLayer', 800, 600);
+		this.lowerTreeLayer = this.map.createLayer('lowerTreeLayer', 800, 600);
+		this.lesserObjectsLayer = this.map.createLayer('lesserObjectsLayer', 800, 600);
 		
 		this.pathfinder = this.game.plugins.add(Phaser.Plugin.PathFinderPlugin);
 		
@@ -46,9 +40,9 @@ Level.prototype = {
 		var walkables = [];
 		
 		var counter = 0;
-		for(var i = 0; i < 17; i++){
+		for(var i = 0; i < 30; i++){
 			grid[i] = [];
-			for(var j = 0; j < 16; j++){
+			for(var j = 0; j < 30; j++){
 				grid[i].push({index: counter});
 				
 				//TODO: Kolla alla lager
@@ -89,9 +83,13 @@ Level.prototype = {
 	    this.game.camera.follow(this.player);
 		this.player.body.setSize(13,32,16,9);
 	
-		this.controlPanel = new ControlPanel(this.game, this.player);
+	
+		this.controlPanel = new ControlPanel(this.game, this.game.camera.x, this.game.camera.y+(600-160));
+	    
+		this.controlPanel.fixedToCamera = true;
 		
 		this.player.game.controlPanel = this.controlPanel;
+
 	},
 
 	update: function(){
@@ -131,7 +129,7 @@ Level.prototype = {
 				}
 			}
 		}
-		
+
 		if(this.player.timeAttacked > 0){
 			this.controlPanel.attackBar.updateProgress(this.game.time.now - this.player.timeAttacked, this.player.getAttackSpeed());
 		}

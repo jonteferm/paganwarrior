@@ -251,7 +251,7 @@ Character.prototype.getTargetDirection = function(target){
 	var horizontalDifference = this.x > target.x ? this.x - target.x : target.x - this.x;
 	
 	if(target.y < this.y && (verticalDifference > horizontalDifference)){
-		if(this.x - target.x <= -48){
+		if(this.x - target.x <= -32){
 			return "rightUp";
 		}else if(this.x - target.x >= 24) {
 			return "leftUp";
@@ -259,7 +259,7 @@ Character.prototype.getTargetDirection = function(target){
 			return "up";
 		}
 	}else if((target.y > this.y) && (verticalDifference > horizontalDifference)){
-		if(this.x - target.x <= -48){
+		if(this.x - target.x <= -32){
 			return "rightDown";
 		}else if(this.x - target.x >= 24) {
 			return "leftDown";
@@ -279,10 +279,11 @@ Character.prototype.drawReachCircle = function(){
 		this.reachCircle.clear();
 	}
 
+	/*
 	this.reachCircle.beginFill(0x000000, 1);
-	this.reachCircle.drawCircle(this.x + (SPRITE_SIZE/2), this.y + (SPRITE_SIZE/2), this.reach * SPRITE_SIZE);
-	this.reachCircle.alpha = 0.2;
-	this.reachCircle.endFill();
+	this.reachCircle.drawCircle(this.x - (SPRITE_SIZE), this.y + (SPRITE_SIZE), this.reach * SPRITE_SIZEA);
+	this.reachCircle.alpha = 0.8;
+	this.reachCircle.endFill();*/
 };
 
 Character.prototype.playCombatAnimations = function(target){

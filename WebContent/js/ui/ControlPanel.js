@@ -1,23 +1,14 @@
-ControlPanel = function(game, player){
-	this.game = game;
-	this.player = player;
-
-	var graphics = game.add.graphics();
+ControlPanel = function(game, x, y){
+	Phaser.Sprite.call(this, game, x, y, 'panel');
 	
-	graphics.beginFill(0x000000, 1);
-	this.gamePanel = graphics.drawRect(0, 768, 768, -286);
-	graphics.endFill();
-	this.gamePanel.fixedToCamera = true;
+	this.game = game;
+	this.player = this.game.state.states.level.player;
 
 	this.gameLogTextHeight = 0;
 	this.gameLog = [];
 	this.gameLogHistory = [];
 
-
-	this.addText("Welcome brave adventurer!");
-
-	this.updateCombatModeText();
-	this.updatePlayerStatsText();
+	const TIMEBAR_ROW_Y = 540;
 
 	this.keys = {switchCombatStyle: this.game.input.keyboard.addKey(Phaser.Keyboard.C)};	
 
@@ -37,40 +28,49 @@ ControlPanel = function(game, player){
 	}, this);
 	
 	
-	this.attackBar = new TimeBar(this.game, 486, 600, 0xff8811, this.player.getAttackSpeed());
-	this.blockBar = new TimeBar(this.game, 486+40, 600, 0xaaaaaa, this.player.getBlockSpeed());
-	this.groupCombatBar = new TimeBar(this.game, 486+120, 600, 0xffffff, this.player.getGroupCombatCooldownSpeed());
-	this.groupCombatTimeBar = new TimeBar(this.game, 486+180, 600, 0x0000ff, this.player.maxGroupCombatTime);
+    this.game.add.existing(this);
+    
+	this.attackBar = new TimeBar(this.game, 486, TIMEBAR_ROW_Y, 0xff8811, this.player.getAttackSpeed());
+	this.blockBar = new TimeBar(this.game, 486+40, TIMEBAR_ROW_Y, 0xaaaaaa, this.player.getBlockSpeed());
+	this.groupCombatBar = new TimeBar(this.game, 486+120, TIMEBAR_ROW_Y, 0xffffff, this.player.getGroupCombatCooldownSpeed());
+	this.groupCombatTimeBar = new TimeBar(this.game, 486+180, TIMEBAR_ROW_Y, 0x0000ff, this.player.maxGroupCombatTime);
 	
-	this.attackBarText = this.game.add.bitmapText(476, 600, 'font', "Attack", 16);
+	this.attackBarText = this.game.add.bitmapText(476, TIMEBAR_ROW_Y, 'font', "Attack", 16);
 	this.attackBarText.smoothed = true;
 	this.attackBarText.fixedToCamera = true;
 	
-	this.blockBarText = this.game.add.bitmapText(486+35, 600, 'font', "Block", 16);
+	this.blockBarText = this.game.add.bitmapText(486+35, TIMEBAR_ROW_Y, 'font', "Block", 16);
 	this.blockBarText.smoothed = true;
 	this.blockBarText.fixedToCamera = true;
 	
-	this.groupCombatBarText = this.game.add.bitmapText(486+110, 520, 'font', "GROUP COMBAT", 16);
+	this.groupCombatBarText = this.game.add.bitmapText(486+100, TIMEBAR_ROW_Y, 'font', "Cooldown", 16);
 	this.groupCombatBarText.smoothed = true;
 	this.groupCombatBarText.fixedToCamera = true;
 	
-	this.groupCombatBarText = this.game.add.bitmapText(486+110, 521, 'font', "_____________", 16);
-	this.groupCombatBarText.smoothed = true;
-	this.groupCombatBarText.fixedToCamera = true;
-	
-	this.groupCombatBarText = this.game.add.bitmapText(486+100, 600, 'font', "Cooldown", 16);
-	this.groupCombatBarText.smoothed = true;
-	this.groupCombatBarText.fixedToCamera = true;
-	
-	this.groupCombatTimeBarText = this.game.add.bitmapText(486+175, 600, 'font', "Time", 16);
+	this.groupCombatTimeBarText = this.game.add.bitmapText(486+175, TIMEBAR_ROW_Y, 'font', "Time", 16);
 	this.groupCombatTimeBarText.smoothed = true;
 	this.groupCombatTimeBarText.fixedToCamera = true;
+	
+	this.groupCombatBarText = this.game.add.bitmapText(486+110, 460, 'font', "GROUP COMBAT", 16);
+	this.groupCombatBarText.smoothed = true;
+	this.groupCombatBarText.fixedToCamera = true;
+	
+	this.groupCombatBarText = this.game.add.bitmapText(486+110, 461, 'font', "_____________", 16);
+	this.groupCombatBarText.smoothed = true;
+	this.groupCombatBarText.fixedToCamera = true;
+	
+	this.updateCombatModeText();
+	this.updatePlayerStatsText();
+	
+	this.addText("Welcome brave adventurer!");
 };
+
+ControlPanel.prototype = Object.create(Phaser.Sprite.prototype);
 
 ControlPanel.prototype.constructor = ControlPanel;
 
 ControlPanel.prototype.addText = function(text){
-	var bitmapText = this.game.add.bitmapText(10, 486, 'font',text, 16);
+	var bitmapText = this.game.add.bitmapText(10, 450, 'font',text, 16);
 	bitmapText.smoothed = true;
 	this.gameLog.push(bitmapText);
 	this.gameLog[this.gameLog.length-1].fixedToCamera = true;
@@ -105,7 +105,7 @@ ControlPanel.prototype.updateCombatModeText = function(){
 		this.combatModeText.destroy();
 	}
 
-	this.combatModeText = this.game.add.bitmapText(486, 486, 'font',this.player.groupCombatEnabled ? "Combat: Group" : "Combat: Single", 16);
+	this.combatModeText = this.game.add.bitmapText(486, 460, 'font',this.player.groupCombatEnabled ? "Combat: Group" : "Combat: Single", 16);
 	this.combatModeText.smoothed = true;
 	this.combatModeText.fixedToCamera = true;
 };
@@ -115,7 +115,7 @@ ControlPanel.prototype.updatePlayerStatsText = function(){
 		this.playerHealthText.destroy();
 	}
 	
-	this.playerHealthText = this.game.add.bitmapText(486, 506, 'font',"Health: " + this.player.health, 16);
+	this.playerHealthText = this.game.add.bitmapText(486, 445, 'font',"Health: " + this.player.health, 16);
 	this.playerHealthText.smoothed = true;
 	this.playerHealthText.fixedToCamera = true;
 };

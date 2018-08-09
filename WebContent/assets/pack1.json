@@ -1,191 +1,167 @@
 {
-    "level": [
-        {
-            "type": "spritesheet",
-            "key": "player",
-            "url": "assets/images/playersprite.png",
-            "frameWidth": 48,
-            "frameHeight": 48,
-            "frameMax": -1,
-            "margin": 0,
-            "spacing": 0
-        },
-        {
-            "type": "spritesheet",
-            "key": "cultist",
-            "url": "assets/images/cultist.png",
-            "frameWidth": 48,
-            "frameHeight": 48,
-            "frameMax": -1,
-            "margin": 0,
-            "spacing": 0
-        },
-        {
-            "type": "image",
-            "key": "gate",
-            "url": "assets/images/gate.png",
-            "overwrite": false
-        },
-        {
-            "type": "image",
-            "key": "gateopen",
-            "url": "assets/images/gateopen.png",
-            "overwrite": false
-        },
-        {
-            "type": "image",
-            "key": "goldenkey",
-            "url": "assets/images/goldenkey.png",
-            "overwrite": false
-        },
-        {
-            "type": "image",
-            "key": "healthpotion",
-            "url": "assets/images/healthpotion.png",
-            "overwrite": false
-        },
-        {
-            "type": "image",
-            "key": "maiden",
-            "url": "assets/images/maiden.png",
-            "overwrite": false
-        },
-        {
-            "type": "image",
-            "key": "tiles",
-            "url": "assets/images/tiles.png",
-            "overwrite": false
-        },
-        {
-            "type": "bitmapFont",
-            "key": "font",
-            "textureURL": "assets/fonts/font_0.png",
-            "atlasURL": "assets/fonts/font.xml",
-            "xSpacing": 0,
-            "ySpacing": 0
-        },
-        {
-            "type": "image",
-            "key": "tree",
-            "url": "assets/images/testmap1/tree.png",
-            "overwrite": false
-        },
-        {
-            "type": "spritesheet",
-            "key": "sword",
-            "url": "assets/images/Sword.png",
-            "frameWidth": 48,
-            "frameHeight": 48,
-            "frameMax": -1,
-            "margin": 0,
-            "spacing": 0
-        },
-        {
-            "type": "image",
-            "key": "tilesLightForest",
-            "url": "assets/images/testmap1/light_forest_tileset_0.png",
-            "overwrite": false
-        },
-        {
-            "type": "image",
-            "key": "tilesAutumn",
-            "url": "assets/images/testmap1/rpg-autumn-v2.png",
-            "overwrite": false
-        },
-        {
-            "type": "image",
-            "key": "equipped",
-            "url": "assets/images/equipped.png",
-            "overwrite": false
-        },
-        {
-            "type": "bitmapFont",
-            "key": "smallFont",
-            "textureURL": "assets/fonts/smallFont_0.png",
-            "atlasURL": "assets/fonts/smallFont.xml",
-            "xSpacing": 0,
-            "ySpacing": 0
-        },
-        {
-            "type": "image",
-            "key": "inventory",
-            "url": "assets/images/inventory.png",
-            "overwrite": false
-        },
-        {
-            "type": "spritesheet",
-            "key": "sword2",
-            "url": "assets/images/Sword2.png",
-            "frameWidth": 48,
-            "frameHeight": 48,
-            "frameMax": -1,
-            "margin": 0,
-            "spacing": 0
-        },
-        {
-            "type": "image",
-            "key": "autumn48",
-            "url": "assets/images/autumn48.png",
-            "overwrite": false
-        },
-        {
-            "type": "image",
-            "key": "lightForest48",
-            "url": "assets/images/lightForest48.png",
-            "overwrite": false
-        },
-        {
-            "type": "tilemap",
-            "key": "oryxtiles2",
-            "url": "assets/tilemaps/oryxtiles2.json",
-            "format": "TILED_JSON"
-        },
-        {
-            "type": "image",
-            "key": "trees",
-            "url": "assets/images/trees.png",
-            "overwrite": false
-        },
-        {
-            "type": "image",
-            "key": "wood48",
-            "url": "assets/images/wood48.png",
-            "overwrite": false
-        },
-        {
-            "type": "image",
-            "key": "conversation",
-            "url": "assets/images/conversation.png",
-            "overwrite": false
-        },
-        {
-            "type": "image",
-            "key": "exitBtn",
-            "url": "assets/images/exitBtn.png",
-            "overwrite": false
-        },
-        {
-            "type": "spritesheet",
-            "key": "enemyfootman",
-            "url": "assets/images/enemyfootman.png",
-            "frameWidth": 48,
-            "frameHeight": 48,
-            "frameMax": -1,
-            "margin": 0,
-            "spacing": 0
-        },
-        {
-            "type": "image",
-            "key": "next",
-            "url": "assets/images/next.png",
-            "overwrite": false
-        }
-    ],
-    "meta": {
-        "generated": "1523221312013",
-        "app": "Phaser Editor",
-        "url": "http://phasereditor.boniatillo.com",
-        "version": "1.0",
-        "copyright": "Arian Fornaris (c) 2015,2016"
+  "level": [
+    {
+      "type": "spritesheet",
+      "key": "player",
+      "url": "assets/images/playersprite.png",
+      "frameWidth": 48,
+      "frameHeight": 48,
+      "frameMax": -1,
+      "margin": 0,
+      "spacing": 0
+    },
+    {
+      "type": "spritesheet",
+      "key": "cultist",
+      "url": "assets/images/cultist.png",
+      "frameWidth": 48,
+      "frameHeight": 48,
+      "frameMax": -1,
+      "margin": 0,
+      "spacing": 0
+    },
+    {
+      "type": "image",
+      "key": "gate",
+      "url": "assets/images/gate.png",
+      "overwrite": false
+    },
+    {
+      "type": "image",
+      "key": "gateopen",
+      "url": "assets/images/gateopen.png",
+      "overwrite": false
+    },
+    {
+      "type": "image",
+      "key": "goldenkey",
+      "url": "assets/images/goldenkey.png",
+      "overwrite": false
+    },
+    {
+      "type": "image",
+      "key": "healthpotion",
+      "url": "assets/images/healthpotion.png",
+      "overwrite": false
+    },
+    {
+      "type": "image",
+      "key": "maiden",
+      "url": "assets/images/maiden.png",
+      "overwrite": false
+    },
+    {
+      "type": "image",
+      "key": "tiles",
+      "url": "assets/images/tiles.png",
+      "overwrite": false
+    },
+    {
+      "type": "bitmapFont",
+      "key": "font",
+      "textureURL": "assets/fonts/font_0.png",
+      "atlasURL": "assets/fonts/font.xml",
+      "xSpacing": 0,
+      "ySpacing": 0
+    },
+    {
+      "type": "spritesheet",
+      "key": "sword",
+      "url": "assets/images/Sword.png",
+      "frameWidth": 48,
+      "frameHeight": 48,
+      "frameMax": -1,
+      "margin": 0,
+      "spacing": 0
+    },
+    {
+      "type": "image",
+      "key": "equipped",
+      "url": "assets/images/equipped.png",
+      "overwrite": false
+    },
+    {
+      "type": "bitmapFont",
+      "key": "smallFont",
+      "textureURL": "assets/fonts/smallFont_0.png",
+      "atlasURL": "assets/fonts/smallFont.xml",
+      "xSpacing": 0,
+      "ySpacing": 0
+    },
+    {
+      "type": "image",
+      "key": "inventory",
+      "url": "assets/images/inventory.png",
+      "overwrite": false
+    },
+    {
+      "type": "spritesheet",
+      "key": "sword2",
+      "url": "assets/images/Sword2.png",
+      "frameWidth": 48,
+      "frameHeight": 48,
+      "frameMax": -1,
+      "margin": 0,
+      "spacing": 0
+    },
+    {
+      "type": "tilemap",
+      "key": "fototiles",
+      "url": "assets/tilemaps/fototiles.json",
+      "format": "TILED_JSON"
+    },
+    {
+      "type": "image",
+      "key": "conversation",
+      "url": "assets/images/conversation.png",
+      "overwrite": false
+    },
+    {
+      "type": "image",
+      "key": "exitBtn",
+      "url": "assets/images/exitBtn.png",
+      "overwrite": false
+    },
+    {
+      "type": "spritesheet",
+      "key": "enemyfootman",
+      "url": "assets/images/enemyfootman.png",
+      "frameWidth": 48,
+      "frameHeight": 48,
+      "frameMax": -1,
+      "margin": 0,
+      "spacing": 0
+    },
+    {
+      "type": "image",
+      "key": "next",
+      "url": "assets/images/next.png",
+      "overwrite": false
+    },
+    {
+      "type": "image",
+      "key": "Forest Floor",
+      "url": "assets/images/Forest Floor.jpg",
+      "overwrite": false
+    },
+    {
+      "type": "image",
+      "key": "autumntrees",
+      "url": "assets/images/autumn_theme_by_ayene_chan-d5i9ma1.png",
+      "overwrite": false
+    },
+    {
+      "type": "image",
+      "key": "panel",
+      "url": "assets/images/panel.png",
+      "overwrite": false
     }
+  ],
+  "meta": {
+    "generated": "1533219777012",
+    "app": "Phaser Editor",
+    "url": "http://phasereditor.boniatillo.com",
+    "version": "1.0",
+    "copyright": "Arian Fornaris (c) 2015,2016"
+  }
 }

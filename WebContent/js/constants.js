@@ -1,4 +1,4 @@
-const SPRITE_SIZE = 48; //Tile size of the character sprites.
+const SPRITE_SIZE = 32; //Tile size of the character sprites.
 const ATTACKSPEED_MULTIPLIER = 10; //Attack speed is multiplied by this so that the attack speed value can be kept in same format as other stats.
 const ATTACKSPEED_COUNTERWEIGHT = 2000; //Used as the base attack speed in milliseconds. The (speed*multiplier) is subtracted from this value.
 const BLOCKSPEED_MULTIPLIER = 10; //Block speed is multiplied by this so that the attack speed value can be kept in same format as other stats.

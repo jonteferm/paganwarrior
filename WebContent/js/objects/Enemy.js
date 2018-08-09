@@ -135,6 +135,10 @@ Enemy.prototype.takeActions = function(levelObjects){
 			var goalY = levelObjects.player.y + (SPRITE_SIZE);
 
 			this.moveTo(goalX, goalY, levelObjects.layer, levelObjects.pathfinder);
+		}else{
+	
+			this.body.velocity.x = 0;
+			this.body.velocity.y = 0;
 		}
 	}
 };
@@ -150,8 +154,8 @@ Enemy.prototype.checkSpotPlayer = function(playerX, playerY){
 		
 Enemy.prototype.makeMovement = function(velocity){
 
-	this.body.velocity.x = velocity.x*80;
-	this.body.velocity.y = velocity.y*80;
+	this.body.velocity.x = velocity.x*60;
+	this.body.velocity.y = velocity.y*60;
 	
 	var walkUp = this.body.velocity.y < 0.5;
 	var walkDown = this.body.velocity.y > 0.5;
